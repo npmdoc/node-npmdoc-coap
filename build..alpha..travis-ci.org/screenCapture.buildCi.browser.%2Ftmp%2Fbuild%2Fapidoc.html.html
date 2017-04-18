@@ -1,4 +1,4 @@
-<div class="apidocDiv">
+<html><head></head><body><div class="apidocDiv">
 <style>
 /*csslint
 */
@@ -47,17 +47,10 @@
 }
 </style>
 <h1>api documentation for
-    <a
-
-        href="https://github.com/mcollina/node-coap#readme"
-
-    >coap (v0.21.0)</a>
+    <a href="https://github.com/mcollina/node-coap#readme">coap (v0.21.0)</a>
 </h1>
 <h4>A CoAP library for node modelled after 'http'</h4>
-<div class="apidocSectionDiv"><a
-    href="#apidoc.tableOfContents"
-    id="apidoc.tableOfContents"
-><h1>table of contents</h1></a><ol>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
 
     <li class="apidocModuleLi"><a href="#apidoc.module.coap">module coap</a><ol>
 
@@ -1452,7 +1445,7 @@
     opts = {}
 
   if (!opts.type)
-    opts.type = &#x27;udp4&#x27;
+    opts.type = 'udp4'
 
   if (opts.socket) {
     delete opts.port
@@ -1463,13 +1456,13 @@
   this._init(opts.socket)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-registerFormat(&#x27;application/octet-stream&#x27;, 42)
-registerFormat(&#x27;application/exi&#x27;, 47)
-registerFormat(&#x27;application/json&#x27;, 50)
+registerFormat('application/octet-stream', 42)
+registerFormat('application/exi', 47)
+registerFormat('application/json', 50)
 ```
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;agent&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="agent"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">Agent</span>([opts])
 
 An Agent encapsulate an UDP Socket. It uses a combination of `messageId`
@@ -1542,11 +1535,11 @@ the messages.
     , that = this
     , req = this._msgIdToReq[packet.messageId]
     , ackSent = function(err) {
-        if (err &#x26;&#x26; req)
-          req.emit(&#x27;error&#x27;, err)
+        if (err &amp;&amp; req)
+          req.emit('error', err)
 
         that._msgInFlight--
-        if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+        if (that._closing &amp;&amp; that._msgInFlight === 0) {
           that._doClose()
         }
       }
@@ -1556,7 +1549,7 @@ the messages.
       req = this._tkToReq[packet.token.readUInt32BE(0)]
     }
 
-    if (packet.ack &#x26;&#x26; !req) {
+    if (packet.ack &amp;&amp; !req) {
       // nothing to do, somehow there was
       // a duplicate ack
       return
@@ -1564,7 +1557,7 @@ the messages.
 
     if (!req) {
       buf = generate({
-          code: &#x27;0.00&#x27;
+          code: '0.00'
         , reset: true
         , messageId: packet.messageId
       })
@@ -1577,7 +1570,7 @@ the messages.
 
   if (packet.confirmable) {
     buf = generate({
-        code: &#x27;0.00&#x27;
+        code: '0.00'
       , ack: true
       , messageId: packet.messageId
     })
@@ -1586,22 +1579,22 @@ the messages.
     this._sock.send(buf, 0, buf.length, rsinfo.port, rsinfo.address, ackSent)
   }
 
-  if (packet.code != &#x27;0.00&#x27; &#x26;&#x26; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
+  if (packet.code != '0.00' &amp;&amp; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
 ) != 0)) {
-    // The tokens don&#x27;t match, ignore the message since it is a malformed response
+    // The tokens don't match, ignore the message since it is a malformed response
     return
   }
 
-  if (!packet.confirmable &#x26;&#x26; !req.multicast) {
+  if (!packet.confirmable &amp;&amp; !req.multicast) {
     delete this._msgIdToReq[packet.messageId]
   }
 
   req.sender.reset()
 
-  if (packet.code == &#x27;0.00&#x27;)
+  if (packet.code == '0.00')
     return
 
-  var block2Buff = getOption(packet.options, &#x27;Block2&#x27;)
+  var block2Buff = getOption(packet.options, 'Block2')
   var block2
   // if we got blockwise (2) response
   if (block2Buff) {
@@ -1609,7 +1602,7 @@ the messages.
     // check for error
     if (!block2) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to parse block2&#x27;))
+      return req.emit('error', new Error('failed to parse block2'))
     }
   }
   if (block2) {
@@ -1630,9 +1623,9 @@ the messages.
       })
       if (!block2Val) {
         req.sender.reset()
-        return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to create block2&#x27;))
+        return req.emit('error', new Error('failed to create block2'))
       }
-      req.setOption(&#x27;Block2&#x27;, block2Val)
+      req.setOption('Block2', block2Val)
       req.sender.send(generate(req._packet))
 
       return
@@ -1659,14 +1652,14 @@ the messages.
   else if (block2) {
     delete that._tkToReq[req._packet.token.readUInt32BE(0)]
   }
-  else if (!req.url.observe &#x26;&#x26; packet.token.length &#x3e; 0) {
+  else if (!req.url.observe &amp;&amp; packet.token.length &gt; 0) {
     // it is not, so delete the token
     delete that._tkToReq[packet.token.readUInt32BE(0)]
   }
 
-  if (req.url.observe &#x26;&#x26; packet.code !== &#x27;4.04&#x27;) {
+  if (req.url.observe &amp;&amp; packet.code !== '4.04') {
     response = new ObserveStream(packet, rsinfo, outSocket)
-    response.on(&#x27;close&#x27;, function() {
+    response.on('close', function() {
       delete that._tkToReq[packet.token.readUInt32BE(0)]
       that._cleanUp()
     })
@@ -1678,7 +1671,7 @@ the messages.
     req.response = response
   }
 
-  req.emit(&#x27;response&#x27;, response)
+  req.emit('response', response)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -1699,7 +1692,7 @@ the messages.
 
   var that = this
   this._sock = socket || dgram.createSocket(this._opts.type)
-  this._sock.on(&#x27;message&#x27;, function(msg, rsinfo) {
+  this._sock.on('message', function(msg, rsinfo) {
     var packet
       , message
       , outSocket
@@ -1707,14 +1700,14 @@ the messages.
     try {
       packet = parse(msg)
     } catch(err) {
-      message = generate({ code: &#x27;5.00&#x27;, payload: new Buffer(&#x27;Unable to parse packet&#x27;) })
+      message = generate({ code: '5.00', payload: new Buffer('Unable to parse packet') })
       that._sock.send(message, 0, message.length,
                       rsinfo.port, rsinfo.address)
       return
     }
 
-    if (packet.code[0] === &#x27;0&#x27; &#x26;&#x26; packet.code !== &#x27;0.00&#x27;) {
-      // ignore this packet since it&#x27;s not a response.
+    if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+      // ignore this packet since it's not a response.
       return
     }
 
@@ -1726,10 +1719,10 @@ the messages.
     this._sock.bind( this._opts.port );
   };
 
-  this._sock.on(&#x27;error&#x27;, function(err) {
+  this._sock.on('error', function(err) {
     // we are skipping DNS errors
-    if(!hasDNSbug || err.code !== &#x27;ENOTFOUND&#x27;)
-      that.emit(&#x27;error&#x27;, err)
+    if(!hasDNSbug || err.code !== 'ENOTFOUND')
+      that.emit('error', err)
   })
 
   this._msgIdToReq = {}
@@ -1845,7 +1838,7 @@ the messages.
       buf = generate(packet)
     } catch(err) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, err)
+      return req.emit('error', err)
     }
 
     that._msgIdToReq[packet.messageId] = req
@@ -1858,10 +1851,10 @@ the messages.
 
   req.url = url
 
-  req.statusCode = url.method || &#x27;GET&#x27;
+  req.statusCode = url.method || 'GET'
 
-  urlPropertyToPacketOption(url, req, &#x27;pathname&#x27;, &#x27;Uri-Path&#x27;, &#x27;/&#x27;)
-  urlPropertyToPacketOption(url, req, &#x27;query&#x27;, &#x27;Uri-Query&#x27;, &#x27;&#x26;&#x27;)
+  urlPropertyToPacketOption(url, req, 'pathname', 'Uri-Path', '/')
+  urlPropertyToPacketOption(url, req, 'query', 'Uri-Query', '&amp;')
 
   if (options) {
     for (option in options) {
@@ -1872,25 +1865,25 @@ the messages.
   }
 
   if (url.proxyUri) {
-    req.setOption(&#x27;Proxy-Uri&#x27;, url.proxyUri)
+    req.setOption('Proxy-Uri', url.proxyUri)
   }
 
-  req.sender.on(&#x27;error&#x27;, req.emit.bind(req, &#x27;error&#x27;))
+  req.sender.on('error', req.emit.bind(req, 'error'))
 
-  req.sender.on(&#x27;sending&#x27;, function() {
+  req.sender.on('sending', function() {
     that._msgInFlight++
   })
 
-  req.sender.on(&#x27;timeout&#x27;, function (err) {
-    req.emit(&#x27;timeout&#x27;, err)
+  req.sender.on('timeout', function (err) {
+    req.emit('timeout', err)
     that.abort(req)
   })
 
-  req.sender.on(&#x27;sent&#x27;, function() {
+  req.sender.on('sent', function() {
     if (req.multicast) return;
 
     that._msgInFlight--
-    if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+    if (that._closing &amp;&amp; that._msgInFlight === 0) {
       that._doClose()
     }
   })
@@ -1906,9 +1899,9 @@ the messages.
   }
 
   if (url.observe)
-    req.setOption(&#x27;Observe&#x27;, null)
+    req.setOption('Observe', null)
   else
-    req.on(&#x27;response&#x27;, this._cleanUp.bind(this))
+    req.on('response', this._cleanUp.bind(this))
 
   this._requests++
 
@@ -1933,7 +1926,7 @@ the messages.
     return new CoAPServer(options, listener)
   }
 
-  if (typeof options === &#x27;function&#x27;) {
+  if (typeof options === 'function') {
     listener = options
     options = null
   }
@@ -1986,8 +1979,8 @@ the messages.
   this._block2Cache = {}
 
   if (listener)
-    this.on(&#x27;request&#x27;, listener)
-  debug(&#x27;initialized&#x27;);
+    this.on('request', listener)
+  debug('initialized');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 ## Basic Example
@@ -1996,11 +1989,11 @@ The following example opens a UDP server and sends a
 CoAP message to it:
 
 ```js
-var coap        = require(&#x27;coap&#x27;)
+var coap        = require('coap')
   , server      = coap.<span class="apidocCodeKeywordSpan">createServer</span>()
 
-server.on(&#x27;request&#x27;, function(req, res) {
-  res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+  res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
@@ -2019,9 +2012,9 @@ server.listen(function() {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">createServer.prototype._handle = function (packet, rsinfo) {
 
-  if (packet.code[0] !== &#x27;0&#x27;) {
+  if (packet.code[0] !== '0') {
     // According to RFC7252 Section 4.2 receiving a confirmable messages
-    // that can&#x27;t be processed, should be rejected by ignoring it AND
+    // that can't be processed, should be rejected by ignoring it AND
     // sending a reset. In this case confirmable response message would
     // be silently ignored, which is not exactly as stated in the standard.
     // However, sending a reset would interfere with a coap client which is
@@ -2038,10 +2031,10 @@ server.listen(function() {
     , request
     , response
 
-  if (cached &#x26;&#x26; !packet.ack &#x26;&#x26; !packet.reset) {
+  if (cached &amp;&amp; !packet.ack &amp;&amp; !packet.reset) {
     return sock.send(cached, 0, cached.length, rsinfo.port, rsinfo.address)
-  } else if (cached &#x26;&#x26; (packet.ack || packet.reset)) {
-    if (cached.response &#x26;&#x26; packet.reset) {
+  } else if (cached &amp;&amp; (packet.ack || packet.reset)) {
+    if (cached.response &amp;&amp; packet.reset) {
       cached.response.end()
     }
     return lru.del(toKey(rsinfo.address, rsinfo.port, packet, false))
@@ -2052,11 +2045,11 @@ server.listen(function() {
 
   request = new IncomingMessage(packet, rsinfo)
 
-  if (request.headers[&#x27;Observe&#x27;] === 0) {
+  if (request.headers['Observe'] === 0) {
     Message = ObserveStream
-    if (packet.code !== &#x27;0.01&#x27;)
+    if (packet.code !== '0.01')
       // it is not a GET
-      return this._sendError(new Buffer(&#x27;Observe can only be present with a GET&#x27;), rsinfo)
+      return this._sendError(new Buffer('Observe can only be present with a GET'), rsinfo)
   }
 
   packet.piggybackReplyMs = this._options.piggybackReplyMs;
@@ -2067,14 +2060,14 @@ server.listen(function() {
     try {
       buf = generate(packet)
     } catch(err) {
-      return response.emit(&#x27;error&#x27;, err)
+      return response.emit('error', err)
     }
 
     if (Message === OutMessage) {
-      sender.on(&#x27;error&#x27;, response.emit.bind(response, &#x27;error&#x27;))
+      sender.on('error', response.emit.bind(response, 'error'))
     } else {
       buf.response = response
-      sender.on(&#x27;error&#x27;, function() {
+      sender.on('error', function() {
         response.end()
       })
     }
@@ -2087,12 +2080,12 @@ server.listen(function() {
     if (that._options.sendAcksForNonConfirmablePackets || packet.confirmable){
       sender.send(buf, packet.ack || packet.reset || packet.confirmable === false)
     } else {
-      debug(&#x27;OMIT ACK PACKAGE&#x27;)
+      debug('OMIT ACK PACKAGE')
     }
   })
 
   request.rsinfo = rsinfo
-  response.statusCode = &#x27;2.05&#x27;
+  response.statusCode = '2.05'
   response._request = request._packet
   response._cachekey = toCacheKey(rsinfo.address, rsinfo.port, packet)
 
@@ -2100,11 +2093,11 @@ server.listen(function() {
   //inject this function so the response can add an entry to the cache
   response._addCacheEntry = function(key, payload) {
     if (block2cache.hasOwnProperty(key)) {
-      debug(&#x27;reuse old cache entry, key:&#x27;, key)
+      debug('reuse old cache entry, key:', key)
       clearTimeout(block2cache[key].timeoutId) // cancel old expiry timer
       block2cache[key].payload = payload
     } else {
-      debug(&#x27;add payload to cache, key:&#x27;, key)
+      debug('add payload to cache, key:', key)
       block2cache[key] = {payload: payload}
     }
     // setup new expiry timer
@@ -2113,9 +2106,9 @@ server.listen(function() {
 
   //return cached value for blockwise requests
   var cachedResponseSend = false
-  if (packet.token &#x26;&#x26; packet.token.length &#x3e; 0) {
+  if (packet.token &amp;&amp; packet.token.length &gt; 0) {
     // return cached value only if this request is not the first block request
-    var block2Buff = getOption(response._request.options, &#x27;Block2&#x27;)
+    var block2Buff = getOption(response._request.options, 'Block2')
     var requestedBlockOption
     if (block2Buff) {
       requestedBlockOption = parseBlock2(block2Buff)
@@ -2124,16 +2117,16 @@ server.listen(function() {
       requestedBlockOption = {num: 0}
     }
 
-    if (requestedBlockOption.num &#x3c; 1) {
+    if (requestedBlockOption.num &lt; 1) {
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;first block2 request, remove old entry from cache, key:&#x27;, response._cachekey)
+        debug('first block2 request, remove old entry from cache, key:', response._cachekey)
         clearTimeout(this._block2Cache[response._cachekey].timeoutId)
         delete this._block2Cache[response._cachekey]
       }
     } else {
-      debug(&#x27;check if packet token is in cache, key:&#x27;, response._cachekey)
+      debug('check if packet token is in cache, key:', response._cachekey)
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;found cached payload, key:&#x27; ...</pre></li>
+        debug('found cached payload, key:' ...</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
 
@@ -2148,7 +2141,7 @@ server.listen(function() {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">createServer.prototype._sendError = function (payload, rsinfo, packet) {
   var message = generate({
-    code: &#x27;5.00&#x27;,
+    code: '5.00',
     payload: payload,
     messageId: (packet)?packet.messageId:undefined,
     token: (packet)?packet.token:undefined
@@ -2169,7 +2162,7 @@ server.listen(function() {
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">createServer.prototype._sendProxied = function (packet, proxyUri, callback) {
-  var url = require(&#x27;url&#x27;).parse(proxyUri)
+  var url = require('url').parse(proxyUri)
     , host = url.hostname
     , port = url.port
     , message = generate(removeProxyOptions(packet))
@@ -2220,7 +2213,7 @@ server.listen(function() {
     this._sock.close()
     this._lru.reset()
     this._sock = null
-    this.emit(&#x27;close&#x27;)
+    this.emit('close')
   } else {
     this._lru.reset()
   }
@@ -2228,7 +2221,7 @@ server.listen(function() {
   // cancel cache entry expiry timers
   for (var k in this._block2Cache) {
     if (this._block2Cache.hasOwnProperty(k)) {
-      debug(&#x27;clean-up cache expiry timer, key:&#x27;, k)
+      debug('clean-up cache expiry timer, key:', k)
       clearTimeout(this._block2Cache[k].timeoutId)
       delete this._block2Cache[k]
     }
@@ -2255,35 +2248,35 @@ server.listen(function() {
     port = parameters.coapPort
   }
 
-  if (typeof port === &#x27;function&#x27;) {
+  if (typeof port === 'function') {
     done = port
     port = parameters.coapPort
   }
 
-  if (typeof address === &#x27;function&#x27;) {
+  if (typeof address === 'function') {
     done = address
     address = null
   }
 
   if (this._sock) {
     if (done)
-      done(new Error(&#x27;Already listening&#x27;))
+      done(new Error('Already listening'))
     else
-      throw new Error(&#x27;Already listening&#x27;)
+      throw new Error('Already listening')
 
     return this
   }
 
-  if (address &#x26;&#x26; net.isIPv6(address))
-    this._options.type = &#x27;udp6&#x27;
+  if (address &amp;&amp; net.isIPv6(address))
+    this._options.type = 'udp6'
 
   if (!this._options.type)
-    this._options.type = &#x27;udp4&#x27;
+    this._options.type = 'udp4'
 
   this._sock = dgram.createSocket({type: this._options.type, reuseAddr : true}, handleRequest(this))
 
-  this._sock.on(&#x27;error&#x27;, function(error) {
-    that.emit(&#x27;error&#x27;, error)
+  this._sock.on('error', function(error) {
+    that.emit('error', error)
   })
 
   this._sock.bind(port, address || null, function () {
@@ -2352,14 +2345,14 @@ Register a new option to be converted to string and added to the
 `toString` is a function that accept a `Buffer` and returns a `String`.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;ignoreOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="ignoreOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">ignoreOption</span>(name)
 
 Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.registerFormat(name, value)
 ...</pre></li>
     </ul>
@@ -2431,12 +2424,12 @@ modules.
 
   this._request = request
   this._send = send
-  this.statusCode = &#x27;&#x27;
+  this.statusCode = ''
 
   this._counter = 0
 
   var that = this
-  this.on(&#x27;finish&#x27;, function() {
+  this.on('finish', function() {
     if (that._counter === 0) { // we have sent no messages
       that._doSend(null)
     }
@@ -2491,8 +2484,8 @@ modules.
 
   this._send = send
 
-  this.statusCode = &#x27;&#x27;
-  this.code = &#x27;&#x27;
+  this.statusCode = ''
+  this.code = ''
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -2509,7 +2502,7 @@ modules.
     <li>description and source-code<pre class="apidocCodePre">registerFormat = function (name, value) {
   var bytes;
 
-  if (value &#x3e; 255) {
+  if (value &gt; 255) {
     bytes = new Buffer(2);
     bytes.writeUInt16BE(value, 0);
   } else {
@@ -2526,7 +2519,7 @@ Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerFormat</span>(name, value)
 
 Register a new format to be interpreted and sent in CoAP
@@ -2558,7 +2551,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerOption</span>(name, toBinary, toString)
 
 Register a new option to be converted to string and added to the
@@ -2582,17 +2575,17 @@ Register a new option to be converted to string and added to the
     <li>description and source-code<pre class="apidocCodePre">request = function (url) {
   var agent, req, ipv6
 
-  if (typeof url === &#x27;string&#x27;)
+  if (typeof url === 'string')
     url = URL.parse(url)
 
   ipv6 = net.isIPv6(url.hostname || url.host)
 
   if (url.agent)
     agent = url.agent
-  else if (url.agent === false &#x26;&#x26; !ipv6)
-    agent = new Agent({ type: &#x27;udp4&#x27; })
-  else if (url.agent === false &#x26;&#x26; ipv6)
-    agent = new Agent({ type: &#x27;udp6&#x27; })
+  else if (url.agent === false &amp;&amp; !ipv6)
+    agent = new Agent({ type: 'udp4' })
+  else if (url.agent === false &amp;&amp; ipv6)
+    agent = new Agent({ type: 'udp6' })
   else if (ipv6)
     agent = exports.globalAgentIPv6
   else
@@ -2602,17 +2595,17 @@ Register a new option to be converted to string and added to the
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 })
@@ -2696,7 +2689,7 @@ req.on(&#x27;response&#x27;, function(res) {
   // is a fairly low-intensity task, but the period can be altered here
   // or the timer disabled by setting the value to zero.
   // By default the value is set to 0.5 x exchangeLifetime (~120s)
-  if (values &#x26;&#x26; (typeof(values.pruneTimerPeriod)===&#x22;number&#x22;)) {
+  if (values &amp;&amp; (typeof(values.pruneTimerPeriod)==="number")) {
     p.pruneTimerPeriod = values.pruneTimerPeriod
   } else {
     p.pruneTimerPeriod =  (0.5 * p.exchangeLifetime)
@@ -2714,7 +2707,7 @@ coap.<span class="apidocCodeKeywordSpan">updateTiming</span>(coapTiming);
 ```
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;defaultTiming&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="defaultTiming"&gt;&lt;/a&gt;
 ### coap.defaultTiming
 
 Reset the CoAP timings to the default values
@@ -2771,7 +2764,7 @@ Reset the CoAP timings to the default values
     opts = {}
 
   if (!opts.type)
-    opts.type = &#x27;udp4&#x27;
+    opts.type = 'udp4'
 
   if (opts.socket) {
     delete opts.port
@@ -2782,13 +2775,13 @@ Reset the CoAP timings to the default values
   this._init(opts.socket)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-registerFormat(&#x27;application/octet-stream&#x27;, 42)
-registerFormat(&#x27;application/exi&#x27;, 47)
-registerFormat(&#x27;application/json&#x27;, 50)
+registerFormat('application/octet-stream', 42)
+registerFormat('application/exi', 47)
+registerFormat('application/json', 50)
 ```
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;agent&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="agent"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">Agent</span>([opts])
 
 An Agent encapsulate an UDP Socket. It uses a combination of `messageId`
@@ -2881,11 +2874,11 @@ the messages.
     , that = this
     , req = this._msgIdToReq[packet.messageId]
     , ackSent = function(err) {
-        if (err &#x26;&#x26; req)
-          req.emit(&#x27;error&#x27;, err)
+        if (err &amp;&amp; req)
+          req.emit('error', err)
 
         that._msgInFlight--
-        if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+        if (that._closing &amp;&amp; that._msgInFlight === 0) {
           that._doClose()
         }
       }
@@ -2895,7 +2888,7 @@ the messages.
       req = this._tkToReq[packet.token.readUInt32BE(0)]
     }
 
-    if (packet.ack &#x26;&#x26; !req) {
+    if (packet.ack &amp;&amp; !req) {
       // nothing to do, somehow there was
       // a duplicate ack
       return
@@ -2903,7 +2896,7 @@ the messages.
 
     if (!req) {
       buf = generate({
-          code: &#x27;0.00&#x27;
+          code: '0.00'
         , reset: true
         , messageId: packet.messageId
       })
@@ -2916,7 +2909,7 @@ the messages.
 
   if (packet.confirmable) {
     buf = generate({
-        code: &#x27;0.00&#x27;
+        code: '0.00'
       , ack: true
       , messageId: packet.messageId
     })
@@ -2925,22 +2918,22 @@ the messages.
     this._sock.send(buf, 0, buf.length, rsinfo.port, rsinfo.address, ackSent)
   }
 
-  if (packet.code != &#x27;0.00&#x27; &#x26;&#x26; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
+  if (packet.code != '0.00' &amp;&amp; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
 ) != 0)) {
-    // The tokens don&#x27;t match, ignore the message since it is a malformed response
+    // The tokens don't match, ignore the message since it is a malformed response
     return
   }
 
-  if (!packet.confirmable &#x26;&#x26; !req.multicast) {
+  if (!packet.confirmable &amp;&amp; !req.multicast) {
     delete this._msgIdToReq[packet.messageId]
   }
 
   req.sender.reset()
 
-  if (packet.code == &#x27;0.00&#x27;)
+  if (packet.code == '0.00')
     return
 
-  var block2Buff = getOption(packet.options, &#x27;Block2&#x27;)
+  var block2Buff = getOption(packet.options, 'Block2')
   var block2
   // if we got blockwise (2) response
   if (block2Buff) {
@@ -2948,7 +2941,7 @@ the messages.
     // check for error
     if (!block2) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to parse block2&#x27;))
+      return req.emit('error', new Error('failed to parse block2'))
     }
   }
   if (block2) {
@@ -2969,9 +2962,9 @@ the messages.
       })
       if (!block2Val) {
         req.sender.reset()
-        return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to create block2&#x27;))
+        return req.emit('error', new Error('failed to create block2'))
       }
-      req.setOption(&#x27;Block2&#x27;, block2Val)
+      req.setOption('Block2', block2Val)
       req.sender.send(generate(req._packet))
 
       return
@@ -2998,14 +2991,14 @@ the messages.
   else if (block2) {
     delete that._tkToReq[req._packet.token.readUInt32BE(0)]
   }
-  else if (!req.url.observe &#x26;&#x26; packet.token.length &#x3e; 0) {
+  else if (!req.url.observe &amp;&amp; packet.token.length &gt; 0) {
     // it is not, so delete the token
     delete that._tkToReq[packet.token.readUInt32BE(0)]
   }
 
-  if (req.url.observe &#x26;&#x26; packet.code !== &#x27;4.04&#x27;) {
+  if (req.url.observe &amp;&amp; packet.code !== '4.04') {
     response = new ObserveStream(packet, rsinfo, outSocket)
-    response.on(&#x27;close&#x27;, function() {
+    response.on('close', function() {
       delete that._tkToReq[packet.token.readUInt32BE(0)]
       that._cleanUp()
     })
@@ -3017,7 +3010,7 @@ the messages.
     req.response = response
   }
 
-  req.emit(&#x27;response&#x27;, response)
+  req.emit('response', response)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 }
@@ -3054,7 +3047,7 @@ function proxyRequest(request, next) {
 
   var that = this
   this._sock = socket || dgram.createSocket(this._opts.type)
-  this._sock.on(&#x27;message&#x27;, function(msg, rsinfo) {
+  this._sock.on('message', function(msg, rsinfo) {
     var packet
       , message
       , outSocket
@@ -3062,14 +3055,14 @@ function proxyRequest(request, next) {
     try {
       packet = parse(msg)
     } catch(err) {
-      message = generate({ code: &#x27;5.00&#x27;, payload: new Buffer(&#x27;Unable to parse packet&#x27;) })
+      message = generate({ code: '5.00', payload: new Buffer('Unable to parse packet') })
       that._sock.send(message, 0, message.length,
                       rsinfo.port, rsinfo.address)
       return
     }
 
-    if (packet.code[0] === &#x27;0&#x27; &#x26;&#x26; packet.code !== &#x27;0.00&#x27;) {
-      // ignore this packet since it&#x27;s not a response.
+    if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+      // ignore this packet since it's not a response.
       return
     }
 
@@ -3081,10 +3074,10 @@ function proxyRequest(request, next) {
     this._sock.bind( this._opts.port );
   };
 
-  this._sock.on(&#x27;error&#x27;, function(err) {
+  this._sock.on('error', function(err) {
     // we are skipping DNS errors
-    if(!hasDNSbug || err.code !== &#x27;ENOTFOUND&#x27;)
-      that.emit(&#x27;error&#x27;, err)
+    if(!hasDNSbug || err.code !== 'ENOTFOUND')
+      that.emit('error', err)
   })
 
   this._msgIdToReq = {}
@@ -3200,7 +3193,7 @@ function proxyRequest(request, next) {
       buf = generate(packet)
     } catch(err) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, err)
+      return req.emit('error', err)
     }
 
     that._msgIdToReq[packet.messageId] = req
@@ -3213,10 +3206,10 @@ function proxyRequest(request, next) {
 
   req.url = url
 
-  req.statusCode = url.method || &#x27;GET&#x27;
+  req.statusCode = url.method || 'GET'
 
-  urlPropertyToPacketOption(url, req, &#x27;pathname&#x27;, &#x27;Uri-Path&#x27;, &#x27;/&#x27;)
-  urlPropertyToPacketOption(url, req, &#x27;query&#x27;, &#x27;Uri-Query&#x27;, &#x27;&#x26;&#x27;)
+  urlPropertyToPacketOption(url, req, 'pathname', 'Uri-Path', '/')
+  urlPropertyToPacketOption(url, req, 'query', 'Uri-Query', '&amp;')
 
   if (options) {
     for (option in options) {
@@ -3227,25 +3220,25 @@ function proxyRequest(request, next) {
   }
 
   if (url.proxyUri) {
-    req.setOption(&#x27;Proxy-Uri&#x27;, url.proxyUri)
+    req.setOption('Proxy-Uri', url.proxyUri)
   }
 
-  req.sender.on(&#x27;error&#x27;, req.emit.bind(req, &#x27;error&#x27;))
+  req.sender.on('error', req.emit.bind(req, 'error'))
 
-  req.sender.on(&#x27;sending&#x27;, function() {
+  req.sender.on('sending', function() {
     that._msgInFlight++
   })
 
-  req.sender.on(&#x27;timeout&#x27;, function (err) {
-    req.emit(&#x27;timeout&#x27;, err)
+  req.sender.on('timeout', function (err) {
+    req.emit('timeout', err)
     that.abort(req)
   })
 
-  req.sender.on(&#x27;sent&#x27;, function() {
+  req.sender.on('sent', function() {
     if (req.multicast) return;
 
     that._msgInFlight--
-    if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+    if (that._closing &amp;&amp; that._msgInFlight === 0) {
       that._doClose()
     }
   })
@@ -3261,9 +3254,9 @@ function proxyRequest(request, next) {
   }
 
   if (url.observe)
-    req.setOption(&#x27;Observe&#x27;, null)
+    req.setOption('Observe', null)
   else
-    req.on(&#x27;response&#x27;, this._cleanUp.bind(this))
+    req.on('response', this._cleanUp.bind(this))
 
   this._requests++
 
@@ -3273,17 +3266,17 @@ function proxyRequest(request, next) {
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 })
@@ -3366,11 +3359,11 @@ req.on(&#x27;response&#x27;, function(res) {
     , that = this
     , req = this._msgIdToReq[packet.messageId]
     , ackSent = function(err) {
-        if (err &#x26;&#x26; req)
-          req.emit(&#x27;error&#x27;, err)
+        if (err &amp;&amp; req)
+          req.emit('error', err)
 
         that._msgInFlight--
-        if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+        if (that._closing &amp;&amp; that._msgInFlight === 0) {
           that._doClose()
         }
       }
@@ -3380,7 +3373,7 @@ req.on(&#x27;response&#x27;, function(res) {
       req = this._tkToReq[packet.token.readUInt32BE(0)]
     }
 
-    if (packet.ack &#x26;&#x26; !req) {
+    if (packet.ack &amp;&amp; !req) {
       // nothing to do, somehow there was
       // a duplicate ack
       return
@@ -3388,7 +3381,7 @@ req.on(&#x27;response&#x27;, function(res) {
 
     if (!req) {
       buf = generate({
-          code: &#x27;0.00&#x27;
+          code: '0.00'
         , reset: true
         , messageId: packet.messageId
       })
@@ -3401,7 +3394,7 @@ req.on(&#x27;response&#x27;, function(res) {
 
   if (packet.confirmable) {
     buf = generate({
-        code: &#x27;0.00&#x27;
+        code: '0.00'
       , ack: true
       , messageId: packet.messageId
     })
@@ -3410,22 +3403,22 @@ req.on(&#x27;response&#x27;, function(res) {
     this._sock.send(buf, 0, buf.length, rsinfo.port, rsinfo.address, ackSent)
   }
 
-  if (packet.code != &#x27;0.00&#x27; &#x26;&#x26; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
+  if (packet.code != '0.00' &amp;&amp; (req._packet.token.length != packet.token.length || pf.compareBuffers(req._packet.token, packet.token
 ) != 0)) {
-    // The tokens don&#x27;t match, ignore the message since it is a malformed response
+    // The tokens don't match, ignore the message since it is a malformed response
     return
   }
 
-  if (!packet.confirmable &#x26;&#x26; !req.multicast) {
+  if (!packet.confirmable &amp;&amp; !req.multicast) {
     delete this._msgIdToReq[packet.messageId]
   }
 
   req.sender.reset()
 
-  if (packet.code == &#x27;0.00&#x27;)
+  if (packet.code == '0.00')
     return
 
-  var block2Buff = getOption(packet.options, &#x27;Block2&#x27;)
+  var block2Buff = getOption(packet.options, 'Block2')
   var block2
   // if we got blockwise (2) response
   if (block2Buff) {
@@ -3433,7 +3426,7 @@ req.on(&#x27;response&#x27;, function(res) {
     // check for error
     if (!block2) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to parse block2&#x27;))
+      return req.emit('error', new Error('failed to parse block2'))
     }
   }
   if (block2) {
@@ -3454,9 +3447,9 @@ req.on(&#x27;response&#x27;, function(res) {
       })
       if (!block2Val) {
         req.sender.reset()
-        return req.emit(&#x27;error&#x27;, new Error(&#x27;failed to create block2&#x27;))
+        return req.emit('error', new Error('failed to create block2'))
       }
-      req.setOption(&#x27;Block2&#x27;, block2Val)
+      req.setOption('Block2', block2Val)
       req.sender.send(generate(req._packet))
 
       return
@@ -3483,14 +3476,14 @@ req.on(&#x27;response&#x27;, function(res) {
   else if (block2) {
     delete that._tkToReq[req._packet.token.readUInt32BE(0)]
   }
-  else if (!req.url.observe &#x26;&#x26; packet.token.length &#x3e; 0) {
+  else if (!req.url.observe &amp;&amp; packet.token.length &gt; 0) {
     // it is not, so delete the token
     delete that._tkToReq[packet.token.readUInt32BE(0)]
   }
 
-  if (req.url.observe &#x26;&#x26; packet.code !== &#x27;4.04&#x27;) {
+  if (req.url.observe &amp;&amp; packet.code !== '4.04') {
     response = new ObserveStream(packet, rsinfo, outSocket)
-    response.on(&#x27;close&#x27;, function() {
+    response.on('close', function() {
       delete that._tkToReq[packet.token.readUInt32BE(0)]
       that._cleanUp()
     })
@@ -3502,7 +3495,7 @@ req.on(&#x27;response&#x27;, function(res) {
     req.response = response
   }
 
-  req.emit(&#x27;response&#x27;, response)
+  req.emit('response', response)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 }
@@ -3544,7 +3537,7 @@ function proxyRequest(request, next) {
 
   var that = this
   this._sock = socket || dgram.createSocket(this._opts.type)
-  this._sock.on(&#x27;message&#x27;, function(msg, rsinfo) {
+  this._sock.on('message', function(msg, rsinfo) {
     var packet
       , message
       , outSocket
@@ -3552,14 +3545,14 @@ function proxyRequest(request, next) {
     try {
       packet = parse(msg)
     } catch(err) {
-      message = generate({ code: &#x27;5.00&#x27;, payload: new Buffer(&#x27;Unable to parse packet&#x27;) })
+      message = generate({ code: '5.00', payload: new Buffer('Unable to parse packet') })
       that._sock.send(message, 0, message.length,
                       rsinfo.port, rsinfo.address)
       return
     }
 
-    if (packet.code[0] === &#x27;0&#x27; &#x26;&#x26; packet.code !== &#x27;0.00&#x27;) {
-      // ignore this packet since it&#x27;s not a response.
+    if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+      // ignore this packet since it's not a response.
       return
     }
 
@@ -3571,10 +3564,10 @@ function proxyRequest(request, next) {
     this._sock.bind( this._opts.port );
   };
 
-  this._sock.on(&#x27;error&#x27;, function(err) {
+  this._sock.on('error', function(err) {
     // we are skipping DNS errors
-    if(!hasDNSbug || err.code !== &#x27;ENOTFOUND&#x27;)
-      that.emit(&#x27;error&#x27;, err)
+    if(!hasDNSbug || err.code !== 'ENOTFOUND')
+      that.emit('error', err)
   })
 
   this._msgIdToReq = {}
@@ -3710,7 +3703,7 @@ function proxyRequest(request, next) {
       buf = generate(packet)
     } catch(err) {
       req.sender.reset()
-      return req.emit(&#x27;error&#x27;, err)
+      return req.emit('error', err)
     }
 
     that._msgIdToReq[packet.messageId] = req
@@ -3723,10 +3716,10 @@ function proxyRequest(request, next) {
 
   req.url = url
 
-  req.statusCode = url.method || &#x27;GET&#x27;
+  req.statusCode = url.method || 'GET'
 
-  urlPropertyToPacketOption(url, req, &#x27;pathname&#x27;, &#x27;Uri-Path&#x27;, &#x27;/&#x27;)
-  urlPropertyToPacketOption(url, req, &#x27;query&#x27;, &#x27;Uri-Query&#x27;, &#x27;&#x26;&#x27;)
+  urlPropertyToPacketOption(url, req, 'pathname', 'Uri-Path', '/')
+  urlPropertyToPacketOption(url, req, 'query', 'Uri-Query', '&amp;')
 
   if (options) {
     for (option in options) {
@@ -3737,25 +3730,25 @@ function proxyRequest(request, next) {
   }
 
   if (url.proxyUri) {
-    req.setOption(&#x27;Proxy-Uri&#x27;, url.proxyUri)
+    req.setOption('Proxy-Uri', url.proxyUri)
   }
 
-  req.sender.on(&#x27;error&#x27;, req.emit.bind(req, &#x27;error&#x27;))
+  req.sender.on('error', req.emit.bind(req, 'error'))
 
-  req.sender.on(&#x27;sending&#x27;, function() {
+  req.sender.on('sending', function() {
     that._msgInFlight++
   })
 
-  req.sender.on(&#x27;timeout&#x27;, function (err) {
-    req.emit(&#x27;timeout&#x27;, err)
+  req.sender.on('timeout', function (err) {
+    req.emit('timeout', err)
     that.abort(req)
   })
 
-  req.sender.on(&#x27;sent&#x27;, function() {
+  req.sender.on('sent', function() {
     if (req.multicast) return;
 
     that._msgInFlight--
-    if (that._closing &#x26;&#x26; that._msgInFlight === 0) {
+    if (that._closing &amp;&amp; that._msgInFlight === 0) {
       that._doClose()
     }
   })
@@ -3771,9 +3764,9 @@ function proxyRequest(request, next) {
   }
 
   if (url.observe)
-    req.setOption(&#x27;Observe&#x27;, null)
+    req.setOption('Observe', null)
   else
-    req.on(&#x27;response&#x27;, this._cleanUp.bind(this))
+    req.on('response', this._cleanUp.bind(this))
 
   this._requests++
 
@@ -3783,17 +3776,17 @@ function proxyRequest(request, next) {
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 })
@@ -3819,7 +3812,7 @@ req.on(&#x27;response&#x27;, function(res) {
     return new CoAPServer(options, listener)
   }
 
-  if (typeof options === &#x27;function&#x27;) {
+  if (typeof options === 'function') {
     listener = options
     options = null
   }
@@ -3872,8 +3865,8 @@ req.on(&#x27;response&#x27;, function(res) {
   this._block2Cache = {}
 
   if (listener)
-    this.on(&#x27;request&#x27;, listener)
-  debug(&#x27;initialized&#x27;);
+    this.on('request', listener)
+  debug('initialized');
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 ## Basic Example
@@ -3882,11 +3875,11 @@ The following example opens a UDP server and sends a
 CoAP message to it:
 
 ```js
-var coap        = require(&#x27;coap&#x27;)
+var coap        = require('coap')
   , server      = coap.<span class="apidocCodeKeywordSpan">createServer</span>()
 
-server.on(&#x27;request&#x27;, function(req, res) {
-  res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+  res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
@@ -3925,9 +3918,9 @@ server.listen(function() {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_handle = function (packet, rsinfo) {
 
-  if (packet.code[0] !== &#x27;0&#x27;) {
+  if (packet.code[0] !== '0') {
     // According to RFC7252 Section 4.2 receiving a confirmable messages
-    // that can&#x27;t be processed, should be rejected by ignoring it AND
+    // that can't be processed, should be rejected by ignoring it AND
     // sending a reset. In this case confirmable response message would
     // be silently ignored, which is not exactly as stated in the standard.
     // However, sending a reset would interfere with a coap client which is
@@ -3944,10 +3937,10 @@ server.listen(function() {
     , request
     , response
 
-  if (cached &#x26;&#x26; !packet.ack &#x26;&#x26; !packet.reset) {
+  if (cached &amp;&amp; !packet.ack &amp;&amp; !packet.reset) {
     return sock.send(cached, 0, cached.length, rsinfo.port, rsinfo.address)
-  } else if (cached &#x26;&#x26; (packet.ack || packet.reset)) {
-    if (cached.response &#x26;&#x26; packet.reset) {
+  } else if (cached &amp;&amp; (packet.ack || packet.reset)) {
+    if (cached.response &amp;&amp; packet.reset) {
       cached.response.end()
     }
     return lru.del(toKey(rsinfo.address, rsinfo.port, packet, false))
@@ -3958,11 +3951,11 @@ server.listen(function() {
 
   request = new IncomingMessage(packet, rsinfo)
 
-  if (request.headers[&#x27;Observe&#x27;] === 0) {
+  if (request.headers['Observe'] === 0) {
     Message = ObserveStream
-    if (packet.code !== &#x27;0.01&#x27;)
+    if (packet.code !== '0.01')
       // it is not a GET
-      return this._sendError(new Buffer(&#x27;Observe can only be present with a GET&#x27;), rsinfo)
+      return this._sendError(new Buffer('Observe can only be present with a GET'), rsinfo)
   }
 
   packet.piggybackReplyMs = this._options.piggybackReplyMs;
@@ -3973,14 +3966,14 @@ server.listen(function() {
     try {
       buf = generate(packet)
     } catch(err) {
-      return response.emit(&#x27;error&#x27;, err)
+      return response.emit('error', err)
     }
 
     if (Message === OutMessage) {
-      sender.on(&#x27;error&#x27;, response.emit.bind(response, &#x27;error&#x27;))
+      sender.on('error', response.emit.bind(response, 'error'))
     } else {
       buf.response = response
-      sender.on(&#x27;error&#x27;, function() {
+      sender.on('error', function() {
         response.end()
       })
     }
@@ -3993,12 +3986,12 @@ server.listen(function() {
     if (that._options.sendAcksForNonConfirmablePackets || packet.confirmable){
       sender.send(buf, packet.ack || packet.reset || packet.confirmable === false)
     } else {
-      debug(&#x27;OMIT ACK PACKAGE&#x27;)
+      debug('OMIT ACK PACKAGE')
     }
   })
 
   request.rsinfo = rsinfo
-  response.statusCode = &#x27;2.05&#x27;
+  response.statusCode = '2.05'
   response._request = request._packet
   response._cachekey = toCacheKey(rsinfo.address, rsinfo.port, packet)
 
@@ -4006,11 +3999,11 @@ server.listen(function() {
   //inject this function so the response can add an entry to the cache
   response._addCacheEntry = function(key, payload) {
     if (block2cache.hasOwnProperty(key)) {
-      debug(&#x27;reuse old cache entry, key:&#x27;, key)
+      debug('reuse old cache entry, key:', key)
       clearTimeout(block2cache[key].timeoutId) // cancel old expiry timer
       block2cache[key].payload = payload
     } else {
-      debug(&#x27;add payload to cache, key:&#x27;, key)
+      debug('add payload to cache, key:', key)
       block2cache[key] = {payload: payload}
     }
     // setup new expiry timer
@@ -4019,9 +4012,9 @@ server.listen(function() {
 
   //return cached value for blockwise requests
   var cachedResponseSend = false
-  if (packet.token &#x26;&#x26; packet.token.length &#x3e; 0) {
+  if (packet.token &amp;&amp; packet.token.length &gt; 0) {
     // return cached value only if this request is not the first block request
-    var block2Buff = getOption(response._request.options, &#x27;Block2&#x27;)
+    var block2Buff = getOption(response._request.options, 'Block2')
     var requestedBlockOption
     if (block2Buff) {
       requestedBlockOption = parseBlock2(block2Buff)
@@ -4030,16 +4023,16 @@ server.listen(function() {
       requestedBlockOption = {num: 0}
     }
 
-    if (requestedBlockOption.num &#x3c; 1) {
+    if (requestedBlockOption.num &lt; 1) {
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;first block2 request, remove old entry from cache, key:&#x27;, response._cachekey)
+        debug('first block2 request, remove old entry from cache, key:', response._cachekey)
         clearTimeout(this._block2Cache[response._cachekey].timeoutId)
         delete this._block2Cache[response._cachekey]
       }
     } else {
-      debug(&#x27;check if packet token is in cache, key:&#x27;, response._cachekey)
+      debug('check if packet token is in cache, key:', response._cachekey)
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;found cached payload, key:&#x27; ...</pre></li>
+        debug('found cached payload, key:' ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 }
 
@@ -4070,7 +4063,7 @@ function proxyRequest(request, next) {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_sendError = function (payload, rsinfo, packet) {
   var message = generate({
-    code: &#x27;5.00&#x27;,
+    code: '5.00',
     payload: payload,
     messageId: (packet)?packet.messageId:undefined,
     token: (packet)?packet.token:undefined
@@ -4091,7 +4084,7 @@ function proxyRequest(request, next) {
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_sendProxied = function (packet, proxyUri, callback) {
-  var url = require(&#x27;url&#x27;).parse(proxyUri)
+  var url = require('url').parse(proxyUri)
     , host = url.hostname
     , port = url.port
     , message = generate(removeProxyOptions(packet))
@@ -4105,7 +4098,7 @@ if (request.proxy) {
     request.packet.token = crypto.randomBytes(8);
   }
 
-  request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)] = request
+  request.server._proxiedRequests[request.packet.token.toString('hex')] = request
   request.server.<span class="apidocCodeKeywordSpan">_sendProxied</span>(request.packet, request.proxy, next)
 } else {
   next(null)
@@ -4113,7 +4106,7 @@ if (request.proxy) {
 }
 
 function isObserve(packet) {
-return packet.options.map(isOption(&#x27;Observe&#x27;)).reduce(or, false);
+return packet.options.map(isOption('Observe')).reduce(or, false);
 ...</pre></li>
     </ul>
 
@@ -4139,12 +4132,12 @@ if (request.proxy) {
   return next(null)
 }
 
-var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString('hex')]
 if ( originalProxiedRequest ) {
   request.server.<span class="apidocCodeKeywordSpan">_sendReverseProxied</span>(request.packet, originalProxiedRequest.rsinfo)
 
   if (!isObserve(request.packet))
-    delete request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+    delete request.server._proxiedRequests[request.packet.token.toString('hex')]
 
   next(null)
 } else {
@@ -4174,7 +4167,7 @@ if ( originalProxiedRequest ) {
     this._sock.close()
     this._lru.reset()
     this._sock = null
-    this.emit(&#x27;close&#x27;)
+    this.emit('close')
   } else {
     this._lru.reset()
   }
@@ -4182,7 +4175,7 @@ if ( originalProxiedRequest ) {
   // cancel cache entry expiry timers
   for (var k in this._block2Cache) {
     if (this._block2Cache.hasOwnProperty(k)) {
-      debug(&#x27;clean-up cache expiry timer, key:&#x27;, k)
+      debug('clean-up cache expiry timer, key:', k)
       clearTimeout(this._block2Cache[k].timeoutId)
       delete this._block2Cache[k]
     }
@@ -4225,35 +4218,35 @@ for convenience.
     port = parameters.coapPort
   }
 
-  if (typeof port === &#x27;function&#x27;) {
+  if (typeof port === 'function') {
     done = port
     port = parameters.coapPort
   }
 
-  if (typeof address === &#x27;function&#x27;) {
+  if (typeof address === 'function') {
     done = address
     address = null
   }
 
   if (this._sock) {
     if (done)
-      done(new Error(&#x27;Already listening&#x27;))
+      done(new Error('Already listening'))
     else
-      throw new Error(&#x27;Already listening&#x27;)
+      throw new Error('Already listening')
 
     return this
   }
 
-  if (address &#x26;&#x26; net.isIPv6(address))
-    this._options.type = &#x27;udp6&#x27;
+  if (address &amp;&amp; net.isIPv6(address))
+    this._options.type = 'udp6'
 
   if (!this._options.type)
-    this._options.type = &#x27;udp4&#x27;
+    this._options.type = 'udp4'
 
   this._sock = dgram.createSocket({type: this._options.type, reuseAddr : true}, handleRequest(this))
 
-  this._sock.on(&#x27;error&#x27;, function(error) {
-    that.emit(&#x27;error&#x27;, error)
+  this._sock.on('error', function(error) {
+    that.emit('error', error)
   })
 
   this._sock.bind(port, address || null, function () {
@@ -4288,17 +4281,17 @@ for convenience.
     <li>example usage<pre class="apidocCodePre">...
 , server      = coap.createServer()
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.<span class="apidocCodeKeywordSpan">listen</span>(function() {
-var req = coap.request(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.request('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 ...</pre></li>
@@ -4320,9 +4313,9 @@ req.on(&#x27;response&#x27;, function(res) {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_handle = function (packet, rsinfo) {
 
-  if (packet.code[0] !== &#x27;0&#x27;) {
+  if (packet.code[0] !== '0') {
     // According to RFC7252 Section 4.2 receiving a confirmable messages
-    // that can&#x27;t be processed, should be rejected by ignoring it AND
+    // that can't be processed, should be rejected by ignoring it AND
     // sending a reset. In this case confirmable response message would
     // be silently ignored, which is not exactly as stated in the standard.
     // However, sending a reset would interfere with a coap client which is
@@ -4339,10 +4332,10 @@ req.on(&#x27;response&#x27;, function(res) {
     , request
     , response
 
-  if (cached &#x26;&#x26; !packet.ack &#x26;&#x26; !packet.reset) {
+  if (cached &amp;&amp; !packet.ack &amp;&amp; !packet.reset) {
     return sock.send(cached, 0, cached.length, rsinfo.port, rsinfo.address)
-  } else if (cached &#x26;&#x26; (packet.ack || packet.reset)) {
-    if (cached.response &#x26;&#x26; packet.reset) {
+  } else if (cached &amp;&amp; (packet.ack || packet.reset)) {
+    if (cached.response &amp;&amp; packet.reset) {
       cached.response.end()
     }
     return lru.del(toKey(rsinfo.address, rsinfo.port, packet, false))
@@ -4353,11 +4346,11 @@ req.on(&#x27;response&#x27;, function(res) {
 
   request = new IncomingMessage(packet, rsinfo)
 
-  if (request.headers[&#x27;Observe&#x27;] === 0) {
+  if (request.headers['Observe'] === 0) {
     Message = ObserveStream
-    if (packet.code !== &#x27;0.01&#x27;)
+    if (packet.code !== '0.01')
       // it is not a GET
-      return this._sendError(new Buffer(&#x27;Observe can only be present with a GET&#x27;), rsinfo)
+      return this._sendError(new Buffer('Observe can only be present with a GET'), rsinfo)
   }
 
   packet.piggybackReplyMs = this._options.piggybackReplyMs;
@@ -4368,14 +4361,14 @@ req.on(&#x27;response&#x27;, function(res) {
     try {
       buf = generate(packet)
     } catch(err) {
-      return response.emit(&#x27;error&#x27;, err)
+      return response.emit('error', err)
     }
 
     if (Message === OutMessage) {
-      sender.on(&#x27;error&#x27;, response.emit.bind(response, &#x27;error&#x27;))
+      sender.on('error', response.emit.bind(response, 'error'))
     } else {
       buf.response = response
-      sender.on(&#x27;error&#x27;, function() {
+      sender.on('error', function() {
         response.end()
       })
     }
@@ -4388,12 +4381,12 @@ req.on(&#x27;response&#x27;, function(res) {
     if (that._options.sendAcksForNonConfirmablePackets || packet.confirmable){
       sender.send(buf, packet.ack || packet.reset || packet.confirmable === false)
     } else {
-      debug(&#x27;OMIT ACK PACKAGE&#x27;)
+      debug('OMIT ACK PACKAGE')
     }
   })
 
   request.rsinfo = rsinfo
-  response.statusCode = &#x27;2.05&#x27;
+  response.statusCode = '2.05'
   response._request = request._packet
   response._cachekey = toCacheKey(rsinfo.address, rsinfo.port, packet)
 
@@ -4401,11 +4394,11 @@ req.on(&#x27;response&#x27;, function(res) {
   //inject this function so the response can add an entry to the cache
   response._addCacheEntry = function(key, payload) {
     if (block2cache.hasOwnProperty(key)) {
-      debug(&#x27;reuse old cache entry, key:&#x27;, key)
+      debug('reuse old cache entry, key:', key)
       clearTimeout(block2cache[key].timeoutId) // cancel old expiry timer
       block2cache[key].payload = payload
     } else {
-      debug(&#x27;add payload to cache, key:&#x27;, key)
+      debug('add payload to cache, key:', key)
       block2cache[key] = {payload: payload}
     }
     // setup new expiry timer
@@ -4414,9 +4407,9 @@ req.on(&#x27;response&#x27;, function(res) {
 
   //return cached value for blockwise requests
   var cachedResponseSend = false
-  if (packet.token &#x26;&#x26; packet.token.length &#x3e; 0) {
+  if (packet.token &amp;&amp; packet.token.length &gt; 0) {
     // return cached value only if this request is not the first block request
-    var block2Buff = getOption(response._request.options, &#x27;Block2&#x27;)
+    var block2Buff = getOption(response._request.options, 'Block2')
     var requestedBlockOption
     if (block2Buff) {
       requestedBlockOption = parseBlock2(block2Buff)
@@ -4425,16 +4418,16 @@ req.on(&#x27;response&#x27;, function(res) {
       requestedBlockOption = {num: 0}
     }
 
-    if (requestedBlockOption.num &#x3c; 1) {
+    if (requestedBlockOption.num &lt; 1) {
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;first block2 request, remove old entry from cache, key:&#x27;, response._cachekey)
+        debug('first block2 request, remove old entry from cache, key:', response._cachekey)
         clearTimeout(this._block2Cache[response._cachekey].timeoutId)
         delete this._block2Cache[response._cachekey]
       }
     } else {
-      debug(&#x27;check if packet token is in cache, key:&#x27;, response._cachekey)
+      debug('check if packet token is in cache, key:', response._cachekey)
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
-        debug(&#x27;found cached payload, key:&#x27; ...</pre></li>
+        debug('found cached payload, key:' ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 }
 
@@ -4470,7 +4463,7 @@ function proxyRequest(request, next) {
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_sendError = function (payload, rsinfo, packet) {
   var message = generate({
-    code: &#x27;5.00&#x27;,
+    code: '5.00',
     payload: payload,
     messageId: (packet)?packet.messageId:undefined,
     token: (packet)?packet.token:undefined
@@ -4496,7 +4489,7 @@ function proxyRequest(request, next) {
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">_sendProxied = function (packet, proxyUri, callback) {
-  var url = require(&#x27;url&#x27;).parse(proxyUri)
+  var url = require('url').parse(proxyUri)
     , host = url.hostname
     , port = url.port
     , message = generate(removeProxyOptions(packet))
@@ -4510,7 +4503,7 @@ if (request.proxy) {
     request.packet.token = crypto.randomBytes(8);
   }
 
-  request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)] = request
+  request.server._proxiedRequests[request.packet.token.toString('hex')] = request
   request.server.<span class="apidocCodeKeywordSpan">_sendProxied</span>(request.packet, request.proxy, next)
 } else {
   next(null)
@@ -4518,7 +4511,7 @@ if (request.proxy) {
 }
 
 function isObserve(packet) {
-return packet.options.map(isOption(&#x27;Observe&#x27;)).reduce(or, false);
+return packet.options.map(isOption('Observe')).reduce(or, false);
 ...</pre></li>
     </ul>
 
@@ -4549,12 +4542,12 @@ if (request.proxy) {
   return next(null)
 }
 
-var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString('hex')]
 if ( originalProxiedRequest ) {
   request.server.<span class="apidocCodeKeywordSpan">_sendReverseProxied</span>(request.packet, originalProxiedRequest.rsinfo)
 
   if (!isObserve(request.packet))
-    delete request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+    delete request.server._proxiedRequests[request.packet.token.toString('hex')]
 
   next(null)
 } else {
@@ -4589,7 +4582,7 @@ if ( originalProxiedRequest ) {
     this._sock.close()
     this._lru.reset()
     this._sock = null
-    this.emit(&#x27;close&#x27;)
+    this.emit('close')
   } else {
     this._lru.reset()
   }
@@ -4597,7 +4590,7 @@ if ( originalProxiedRequest ) {
   // cancel cache entry expiry timers
   for (var k in this._block2Cache) {
     if (this._block2Cache.hasOwnProperty(k)) {
-      debug(&#x27;clean-up cache expiry timer, key:&#x27;, k)
+      debug('clean-up cache expiry timer, key:', k)
       clearTimeout(this._block2Cache[k].timeoutId)
       delete this._block2Cache[k]
     }
@@ -4645,35 +4638,35 @@ for convenience.
     port = parameters.coapPort
   }
 
-  if (typeof port === &#x27;function&#x27;) {
+  if (typeof port === 'function') {
     done = port
     port = parameters.coapPort
   }
 
-  if (typeof address === &#x27;function&#x27;) {
+  if (typeof address === 'function') {
     done = address
     address = null
   }
 
   if (this._sock) {
     if (done)
-      done(new Error(&#x27;Already listening&#x27;))
+      done(new Error('Already listening'))
     else
-      throw new Error(&#x27;Already listening&#x27;)
+      throw new Error('Already listening')
 
     return this
   }
 
-  if (address &#x26;&#x26; net.isIPv6(address))
-    this._options.type = &#x27;udp6&#x27;
+  if (address &amp;&amp; net.isIPv6(address))
+    this._options.type = 'udp6'
 
   if (!this._options.type)
-    this._options.type = &#x27;udp4&#x27;
+    this._options.type = 'udp4'
 
   this._sock = dgram.createSocket({type: this._options.type, reuseAddr : true}, handleRequest(this))
 
-  this._sock.on(&#x27;error&#x27;, function(error) {
-    that.emit(&#x27;error&#x27;, error)
+  this._sock.on('error', function(error) {
+    that.emit('error', error)
   })
 
   this._sock.bind(port, address || null, function () {
@@ -4708,17 +4701,17 @@ for convenience.
     <li>example usage<pre class="apidocCodePre">...
 , server      = coap.createServer()
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.<span class="apidocCodeKeywordSpan">listen</span>(function() {
-var req = coap.request(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.request('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 ...</pre></li>
@@ -4774,7 +4767,7 @@ util.inherits(ObserveWriteStream, Writable)
 helpers.<span class="apidocCodeKeywordSpan">addSetOption</span>(ObserveWriteStream)
 
 ObserveWriteStream.prototype._write = function write(data, encoding, done) {
-this.setOption(&#x27;Observe&#x27;, ++this._counter)
+this.setOption('Observe', ++this._counter)
 
 if (this._counter === 16777215)
   this._counter = 1
@@ -4799,20 +4792,20 @@ if (this._counter === 16777215)
 
   byte = 0
   byte |= szx
-  byte |= m &#x3c;&#x3c; 3
-  byte |= (num&#x26;0xf) &#x3c;&#x3c;4
+  byte |= m &lt;&lt; 3
+  byte |= (num&amp;0xf) &lt;&lt;4
 
   // total num occupy up to 5 octets
   // num share the higher octet of first byte, and (may) take more 2 bytes for the rest 4 octets
-  if (num &#x3c;= 0xf) {
+  if (num &lt;= 0xf) {
     extraNum = null
   }
-  else if (num &#x3c;=0xfff) {
+  else if (num &lt;=0xfff) {
     extraNum = new Buffer([num/16])
   }
-  else if (num &#x3c;=0xfffff) {
+  else if (num &lt;=0xfffff) {
     extraNum = new Buffer(2)
-    extraNum.writeUInt16BE(num&#x3e;&#x3e;4,0)
+    extraNum.writeUInt16BE(num&gt;&gt;4,0)
   }
   else {
     // too big block2 number
@@ -4835,7 +4828,7 @@ if (this._counter === 16777215)
     <li>description and source-code<pre class="apidocCodePre">genAck = function (request) {
   return {
       messageId: request.messageId
-    , code: &#x27;0.00&#x27;
+    , code: '0.00'
     , options: []
     , confirmable: false
     , ack: true
@@ -4889,7 +4882,7 @@ that._packet.ack = false
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function isBoolean(n) {
-  return typeof(n) === &#x27;boolean&#x27;;
+  return typeof(n) === 'boolean';
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4904,7 +4897,7 @@ that._packet.ack = false
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function isNumeric(n) {
-  return !isNaN(parseFloat(n)) &#x26;&#x26; isFinite(n);
+  return !isNaN(parseFloat(n)) &amp;&amp; isFinite(n);
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -4957,7 +4950,7 @@ that._packet.ack = false
     , option
     , paths   = []
     , queries = []
-    , query   = &#x27;&#x27;
+    , query   = ''
 
   dest.payload = packet.payload
   dest.options = packet.options
@@ -4965,14 +4958,14 @@ that._packet.ack = false
   dest.method  = codes[packet.code]
   dest.headers = {}
 
-  for (i=0; i &#x3c; options.length; i++) {
+  for (i=0; i &lt; options.length; i++) {
     option = options[i]
 
-    if (option.name === &#x27;Uri-Path&#x27;) {
+    if (option.name === 'Uri-Path') {
       paths.push(option.value)
     }
 
-    if (option.name === &#x27;Uri-Query&#x27;) {
+    if (option.name === 'Uri-Query') {
       queries.push(option.value)
     }
 
@@ -4982,13 +4975,13 @@ that._packet.ack = false
       dest.headers[option.name] = option.value
   }
 
-  if (dest.headers[&#x27;Content-Format&#x27;])
-    dest.headers[&#x27;Content-Type&#x27;] = dest.headers[&#x27;Content-Format&#x27;]
+  if (dest.headers['Content-Format'])
+    dest.headers['Content-Type'] = dest.headers['Content-Format']
 
-  query = queries.join(&#x27;&#x26;&#x27;)
-  dest.url = &#x27;/&#x27; + paths.join(&#x27;/&#x27;)
+  query = queries.join('&amp;')
+  dest.url = '/' + paths.join('/')
   if (query) {
-    dest.url += &#x27;?&#x27; + query
+    dest.url += '?' + query
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -5007,13 +5000,13 @@ that._packet.ack = false
   var num
   switch (block2Value.length) {
     case 1:
-    num = block2Value[0] &#x3e;&#x3e; 4
+    num = block2Value[0] &gt;&gt; 4
     break
     case 2:
-    num = (block2Value[0]*256 + block2Value[1]) &#x3e;&#x3e; 4
+    num = (block2Value[0]*256 + block2Value[1]) &gt;&gt; 4
     break
     case 3:
-    num = (block2Value[0]*256*256 + block2Value[1]*256 + block2Value[2]) &#x3e;&#x3e;4
+    num = (block2Value[0]*256*256 + block2Value[1]*256 + block2Value[2]) &gt;&gt;4
     break
     default:
     // Block2 is more than 3 bytes
@@ -5025,9 +5018,9 @@ that._packet.ack = false
     return null
   }
   return {
-    moreBlock2: (block2Value.slice(-1)[0] &#x26; (0x01&#x3c;&#x3c;3))? true:false,
+    moreBlock2: (block2Value.slice(-1)[0] &amp; (0x01&lt;&lt;3))? true:false,
     num: num,
-    size: Math.pow(2, (block2Value.slice(-1)[0] &#x26; 0x07)+4)
+    size: Math.pow(2, (block2Value.slice(-1)[0] &amp; 0x07)+4)
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
@@ -5043,17 +5036,17 @@ that._packet.ack = false
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function toCode(code) {
-  if (typeof code === &#x27;string&#x27;)
+  if (typeof code === 'string')
     return code
 
   var first  = Math.floor(code / 100)
     , second = code - first * 100
-    , result = &#x27;&#x27;
+    , result = ''
 
-  result += first + &#x27;.&#x27;
+  result += first + '.'
 
-  if (second &#x3c; 10)
-    result += &#x27;0&#x27;
+  if (second &lt; 10)
+    result += '0'
 
   result += second
 
@@ -5086,14 +5079,14 @@ Register a new option to be converted to string and added to the
 `toString` is a function that accept a `Buffer` and returns a `String`.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;ignoreOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="ignoreOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">ignoreOption</span>(name)
 
 Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.registerFormat(name, value)
 ...</pre></li>
     </ul>
@@ -5136,7 +5129,7 @@ modules.
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function Readable(options) {
-  Duplex = Duplex || require(&#x27;./_stream_duplex&#x27;);
+  Duplex = Duplex || require('./_stream_duplex');
 
   if (!(this instanceof Readable)) return new Readable(options);
 
@@ -5145,7 +5138,7 @@ modules.
   // legacy
   this.readable = true;
 
-  if (options &#x26;&#x26; typeof options.read === &#x27;function&#x27;) this._read = options.read;
+  if (options &amp;&amp; typeof options.read === 'function') this._read = options.read;
 
   Stream.call(this);
 }</pre></li>
@@ -5172,7 +5165,7 @@ modules.
     , payload = this._packet.payload
     , buf     = null
 
-  if (start &#x3c; payload.length)
+  if (start &lt; payload.length)
     buf = payload.slice(start, end)
 
   this._payloadIndex = end
@@ -5200,12 +5193,12 @@ modules.
     return next(null)
   }
 
-  var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+  var originalProxiedRequest = request.server._proxiedRequests[request.packet.token.toString('hex')]
   if ( originalProxiedRequest ) {
     request.server._sendReverseProxied(request.packet, originalProxiedRequest.rsinfo)
 
     if (!isObserve(request.packet))
-      delete request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)]
+      delete request.server._proxiedRequests[request.packet.token.toString('hex')]
 
     next(null)
   } else {
@@ -5268,8 +5261,8 @@ modules.
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function proxyRequest(request, next) {
-  for (var i = 0; i &#x3c; request.packet.options.length; i++) {
-    if (request.packet.options[i].name.toLowerCase() === &#x27;proxy-uri&#x27;) {
+  for (var i = 0; i &lt; request.packet.options.length; i++) {
+    if (request.packet.options[i].name.toLowerCase() === 'proxy-uri') {
       request.proxy = request.packet.options[i].value.toString()
     }
   }
@@ -5279,7 +5272,7 @@ modules.
       request.packet.token = crypto.randomBytes(8);
     }
 
-    request.server._proxiedRequests[request.packet.token.toString(&#x27;hex&#x27;)] = request
+    request.server._proxiedRequests[request.packet.token.toString('hex')] = request
     request.server._sendProxied(request.packet, request.proxy, next)
   } else {
     next(null)
@@ -5324,7 +5317,7 @@ modules.
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function Readable(options) {
-  Duplex = Duplex || require(&#x27;./_stream_duplex&#x27;);
+  Duplex = Duplex || require('./_stream_duplex');
 
   if (!(this instanceof Readable)) return new Readable(options);
 
@@ -5333,7 +5326,7 @@ modules.
   // legacy
   this.readable = true;
 
-  if (options &#x26;&#x26; typeof options.read === &#x27;function&#x27;) this._read = options.read;
+  if (options &amp;&amp; typeof options.read === 'function') this._read = options.read;
 
   Stream.call(this);
 }</pre></li>
@@ -5372,8 +5365,8 @@ modules.
     return
 
   pktToMsg(this, packet)
-  if (this.headers[&#x27;Observe&#x27;] &#x3e; this._lastId) {
-    this._lastId = this.headers[&#x27;Observe&#x27;]
+  if (this.headers['Observe'] &gt; this._lastId) {
+    this._lastId = this.headers['Observe']
     this.push(packet.payload)
   }
 }</pre></li>
@@ -5407,7 +5400,7 @@ if (!this.readable)
     <ul>
     <li>description and source-code<pre class="apidocCodePre">close = function () {
   this.push(null)
-  this.emit(&#x27;close&#x27;)
+  this.emit('close')
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 hostname is omitted, the server will accept connections directed to any
@@ -5456,12 +5449,12 @@ for convenience.
 
   this._request = request
   this._send = send
-  this.statusCode = &#x27;&#x27;
+  this.statusCode = ''
 
   this._counter = 0
 
   var that = this
-  this.on(&#x27;finish&#x27;, function() {
+  this.on('finish', function() {
     if (that._counter === 0) { // we have sent no messages
       that._doSend(null)
     }
@@ -5480,7 +5473,7 @@ for convenience.
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function Writable(options) {
-  Duplex = Duplex || require(&#x27;./_stream_duplex&#x27;);
+  Duplex = Duplex || require('./_stream_duplex');
 
   // Writable ctor is applied to Duplexes, too.
   // `realHasInstance` is necessary because using plain `instanceof`
@@ -5489,7 +5482,7 @@ for convenience.
   // Trying to use the custom `instanceof` for Writable here will also break the
   // Node.js LazyTransform implementation, which has a non-trivial getter for
   // `_writableState` that would lead to infinite recursion.
-  if (!realHasInstance.call(Writable, this) &#x26;&#x26; !(this instanceof Duplex)) {
+  if (!realHasInstance.call(Writable, this) &amp;&amp; !(this instanceof Duplex)) {
     return new Writable(options);
   }
 
@@ -5499,9 +5492,9 @@ for convenience.
   this.writable = true;
 
   if (options) {
-    if (typeof options.write === &#x27;function&#x27;) this._write = options.write;
+    if (typeof options.write === 'function') this._write = options.write;
 
-    if (typeof options.writev === &#x27;function&#x27;) this._writev = options.writev;
+    if (typeof options.writev === 'function') this._writev = options.writev;
   }
 
   Stream.call(this);
@@ -5535,12 +5528,12 @@ for convenience.
   delete this._packet.payload
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-  this.statusCode = &#x27;&#x27;
+  this.statusCode = ''
 
   this._counter = 0
 
   var that = this
-  this.on(&#x27;finish&#x27;, function() {
+  this.on('finish', function() {
     if (that._counter === 0) { // we have sent no messages
       that.<span class="apidocCodeKeywordSpan">_doSend</span>(null)
     }
@@ -5562,7 +5555,7 @@ helpers.addSetOption(ObserveWriteStream)
     </h2>
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function write(data, encoding, done) {
-  this.setOption(&#x27;Observe&#x27;, ++this._counter)
+  this.setOption('Observe', ++this._counter)
 
   if (this._counter === 16777215)
     this._counter = 1
@@ -5585,8 +5578,8 @@ helpers.addSetOption(ObserveWriteStream)
     <ul>
     <li>description and source-code<pre class="apidocCodePre">function reset() {
   var packet = this._packet
-  packet.code = &#x27;0.00&#x27;
-  packet.payload = &#x27;&#x27;
+  packet.code = '0.00'
+  packet.payload = ''
   packet.reset = true;
   packet.ack = false
   packet.token = new Buffer(0);
@@ -5598,7 +5591,7 @@ helpers.addSetOption(ObserveWriteStream)
   delete this._packet.payload
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-them by adding a `req.setOption(&#x27;Block2&#x27;, new Buffer([0x2]))` to the
+them by adding a `req.setOption('Block2', new Buffer([0x2]))` to the
 output of [request](#request).
 
 See the
@@ -5610,7 +5603,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 #### message.writeHead(code, headers)
-Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
+Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
  into this mask.  `headers` is an object with keys being the header names, and values being the header values.
 
 -------------------------------------------------------
@@ -5643,7 +5636,7 @@ Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does
   if (!Array.isArray(values))
     values = [values]
 
-  for (i = 0; i &#x3c; values.length; i++) {
+  for (i = 0; i &lt; values.length; i++) {
     this._packet.options.push({
         name: name
       , value: toBinary(name, values[i])
@@ -5681,7 +5674,7 @@ Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does
   if (!Array.isArray(values))
     values = [values]
 
-  for (i = 0; i &#x3c; values.length; i++) {
+  for (i = 0; i &lt; values.length; i++) {
     this._packet.options.push({
         name: name
       , value: toBinary(name, values[i])
@@ -5697,13 +5690,13 @@ It is HTTP-compatible, as it can be passed `404`.
 
 (same as message.code)
 
-&#x3c;a name=&#x22;setOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="setOption"&gt;&lt;/a&gt;
 #### message.<span class="apidocCodeKeywordSpan">setOption</span>(name, value)
 
 Sets a single option value.
 All the options are in binary format, except for
-`&#x27;Content-Format&#x27;`, `&#x27;Accept&#x27;`, `&#x27;Max-Age&#x27;` and `&#x27;ETag&#x27;`.
-See &#x3c;a href=&#x27;#registerOption&#x27;&#x3e;&#x3c;code&#x3e;registerOption&#x3c;/code&#x3e;&#x3c;/a&#x3e;
+`'Content-Format'`, `'Accept'`, `'Max-Age'` and `'ETag'`.
+See &lt;a href='#registerOption'&gt;&lt;code&gt;registerOption&lt;/code&gt;&lt;/a&gt;
 to know how to register more.
 ...</pre></li>
     </ul>
@@ -5752,14 +5745,14 @@ Register a new option to be converted to string and added to the
 `toString` is a function that accept a `Buffer` and returns a `String`.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;ignoreOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="ignoreOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">ignoreOption</span>(name)
 
 Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.registerFormat(name, value)
 ...</pre></li>
     </ul>
@@ -5791,7 +5784,7 @@ modules.
     <li>description and source-code<pre class="apidocCodePre">registerFormat = function (name, value) {
   var bytes;
 
-  if (value &#x3e; 255) {
+  if (value &gt; 255) {
     bytes = new Buffer(2);
     bytes.writeUInt16BE(value, 0);
   } else {
@@ -5808,7 +5801,7 @@ Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerFormat</span>(name, value)
 
 Register a new format to be interpreted and sent in CoAP
@@ -5840,7 +5833,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerOption</span>(name, toBinary, toString)
 
 Register a new option to be converted to string and added to the
@@ -5866,7 +5859,7 @@ Register a new option to be converted to string and added to the
     return value
 
   if (!optionToBinaryFunctions[name])
-    throw new Error(&#x27;Unknown string to Buffer converter for option: &#x27; + name)
+    throw new Error('Unknown string to Buffer converter for option: ' + name)
 
   return optionToBinaryFunctions[name](value)
 }</pre></li>
@@ -5924,8 +5917,8 @@ Register a new option to be converted to string and added to the
 
   this._send = send
 
-  this.statusCode = &#x27;&#x27;
-  this.code = &#x27;&#x27;
+  this.statusCode = ''
+  this.code = ''
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">n/a</pre></li>
     </ul>
@@ -5946,7 +5939,7 @@ Register a new option to be converted to string and added to the
   this._bufs  = []
   this.length = 0
 
-  if (typeof callback == &#x27;function&#x27;) {
+  if (typeof callback == 'function') {
     this._callback = callback
 
     var piper = function piper (err) {
@@ -5956,11 +5949,11 @@ Register a new option to be converted to string and added to the
       }
     }.bind(this)
 
-    this.on(&#x27;pipe&#x27;, function onPipe (src) {
-      src.on(&#x27;error&#x27;, piper)
+    this.on('pipe', function onPipe (src) {
+      src.on('error', piper)
     })
-    this.on(&#x27;unpipe&#x27;, function onUnpipe (src) {
-      src.removeListener(&#x27;error&#x27;, piper)
+    this.on('unpipe', function onUnpipe (src) {
+      src.removeListener('error', piper)
     })
   } else {
     this.append(callback)
@@ -6008,18 +6001,18 @@ Register a new option to be converted to string and added to the
 CoAP message to it:
 
 ```js
-var coap        = require(&#x27;coap&#x27;)
+var coap        = require('coap')
 , server      = coap.createServer()
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.<span class="apidocCodeKeywordSpan">end</span>(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.<span class="apidocCodeKeywordSpan">end</span>('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.listen(function() {
-var req = coap.request(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.request('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
 ...</pre></li>
     </ul>
 
@@ -6039,8 +6032,8 @@ req.on(&#x27;response&#x27;, function(res) {
     , message
     , that = this
 
-  packet.code = &#x27;0.00&#x27;
-  packet.payload = &#x27;&#x27;
+  packet.code = '0.00'
+  packet.payload = ''
   packet.reset = true;
   packet.ack = false
 
@@ -6055,7 +6048,7 @@ req.on(&#x27;response&#x27;, function(res) {
   return this
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-them by adding a `req.setOption(&#x27;Block2&#x27;, new Buffer([0x2]))` to the
+them by adding a `req.setOption('Block2', new Buffer([0x2]))` to the
 output of [request](#request).
 
 See the
@@ -6067,7 +6060,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 #### message.writeHead(code, headers)
-Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
+Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
  into this mask.  `headers` is an object with keys being the header names, and values being the header values.
 
 -------------------------------------------------------
@@ -6100,7 +6093,7 @@ Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does
   if (!Array.isArray(values))
     values = [values]
 
-  for (i = 0; i &#x3c; values.length; i++) {
+  for (i = 0; i &lt; values.length; i++) {
     this._packet.options.push({
         name: name
       , value: toBinary(name, values[i])
@@ -6138,7 +6131,7 @@ Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does
   if (!Array.isArray(values))
     values = [values]
 
-  for (i = 0; i &#x3c; values.length; i++) {
+  for (i = 0; i &lt; values.length; i++) {
     this._packet.options.push({
         name: name
       , value: toBinary(name, values[i])
@@ -6154,13 +6147,13 @@ It is HTTP-compatible, as it can be passed `404`.
 
 (same as message.code)
 
-&#x3c;a name=&#x22;setOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="setOption"&gt;&lt;/a&gt;
 #### message.<span class="apidocCodeKeywordSpan">setOption</span>(name, value)
 
 Sets a single option value.
 All the options are in binary format, except for
-`&#x27;Content-Format&#x27;`, `&#x27;Accept&#x27;`, `&#x27;Max-Age&#x27;` and `&#x27;ETag&#x27;`.
-See &#x3c;a href=&#x27;#registerOption&#x27;&#x3e;&#x3c;code&#x3e;registerOption&#x3c;/code&#x3e;&#x3c;/a&#x3e;
+`'Content-Format'`, `'Accept'`, `'Max-Age'` and `'ETag'`.
+See &lt;a href='#registerOption'&gt;&lt;code&gt;registerOption&lt;/code&gt;&lt;/a&gt;
 to know how to register more.
 ...</pre></li>
     </ul>
@@ -6177,7 +6170,7 @@ to know how to register more.
     <li>description and source-code<pre class="apidocCodePre">writeHead = function (code, headers) {
   var packet = this._packet
   var header
-  packet.code = String(code).replace(/(^\d[^.])/, &#x27;$1.&#x27;)
+  packet.code = String(code).replace(/(^\d[^.])/, '$1.')
   for (header in headers) {
     if (headers.hasOwnProperty(header)) {
       this.setOption(header, headers[header])
@@ -6193,11 +6186,11 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 #### message.<span class="apidocCodeKeywordSpan">writeHead</span>(code, headers)
-Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
+Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
  into this mask.  `headers` is an object with keys being the header names, and values being the header values.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;incoming&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="incoming"&gt;&lt;/a&gt;
 ### IncomingMessage
 
 An `IncomingMessage` object is created by `coap.createServer` or
@@ -6270,7 +6263,7 @@ An `IncomingMessage` object is created by `coap.createServer` or
   // is a fairly low-intensity task, but the period can be altered here
   // or the timer disabled by setting the value to zero.
   // By default the value is set to 0.5 x exchangeLifetime (~120s)
-  if (values &#x26;&#x26; (typeof(values.pruneTimerPeriod)===&#x22;number&#x22;)) {
+  if (values &amp;&amp; (typeof(values.pruneTimerPeriod)==="number")) {
     p.pruneTimerPeriod = values.pruneTimerPeriod
   } else {
     p.pruneTimerPeriod =  (0.5 * p.exchangeLifetime)
@@ -6324,7 +6317,7 @@ An `IncomingMessage` object is created by `coap.createServer` or
     return Buffer.compare(buf1, buf2)
   else {
     if (buf1.length != buf2.length) return -1
-    for (var i = 0; i &#x3c; buf1.length; i++) {
+    for (var i = 0; i &lt; buf1.length; i++) {
       if (buf1[i] != buf2[i]) return -1
     }
     return 0
@@ -6350,7 +6343,7 @@ An `IncomingMessage` object is created by `coap.createServer` or
     <li>description and source-code<pre class="apidocCodePre">registerFormat = function (name, value) {
   var bytes;
 
-  if (value &#x3e; 255) {
+  if (value &gt; 255) {
     bytes = new Buffer(2);
     bytes.writeUInt16BE(value, 0);
   } else {
@@ -6367,7 +6360,7 @@ Explicitly ignore an option; useful for compatibility with `http`-based
 modules.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerFormat&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerFormat"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerFormat</span>(name, value)
 
 Register a new format to be interpreted and sent in CoAP
@@ -6404,7 +6397,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;registerOption&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="registerOption"&gt;&lt;/a&gt;
 ### coap.<span class="apidocCodeKeywordSpan">registerOption</span>(name, toBinary, toString)
 
 Register a new option to be converted to string and added to the
@@ -6433,17 +6426,17 @@ Register a new option to be converted to string and added to the
     <li>description and source-code<pre class="apidocCodePre">request = function (url) {
   var agent, req, ipv6
 
-  if (typeof url === &#x27;string&#x27;)
+  if (typeof url === 'string')
     url = URL.parse(url)
 
   ipv6 = net.isIPv6(url.hostname || url.host)
 
   if (url.agent)
     agent = url.agent
-  else if (url.agent === false &#x26;&#x26; !ipv6)
-    agent = new Agent({ type: &#x27;udp4&#x27; })
-  else if (url.agent === false &#x26;&#x26; ipv6)
-    agent = new Agent({ type: &#x27;udp6&#x27; })
+  else if (url.agent === false &amp;&amp; !ipv6)
+    agent = new Agent({ type: 'udp4' })
+  else if (url.agent === false &amp;&amp; ipv6)
+    agent = new Agent({ type: 'udp6' })
   else if (ipv6)
     agent = exports.globalAgentIPv6
   else
@@ -6453,17 +6446,17 @@ Register a new option to be converted to string and added to the
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
 
-server.on(&#x27;request&#x27;, function(req, res) {
-res.end(&#x27;Hello &#x27; + req.url.split(&#x27;/&#x27;)[1] + &#x27;\n&#x27;)
+server.on('request', function(req, res) {
+res.end('Hello ' + req.url.split('/')[1] + '\n')
 })
 
 // the default CoAP port is 5683
 server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>(&#x27;coap://localhost/Matteo&#x27;)
+var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
 
-req.on(&#x27;response&#x27;, function(res) {
+req.on('response', function(res) {
   res.pipe(process.stdout)
-  res.on(&#x27;end&#x27;, function() {
+  res.on('end', function() {
     process.exit(0)
   })
 })
@@ -6542,9 +6535,9 @@ req.on(&#x27;response&#x27;, function(res) {
 
   this._sock.send(this._message, 0, this._message.length,
                   this._port, this._host, function(err, bytes) {
-                    that.emit(&#x27;sent&#x27;, err, bytes)
+                    that.emit('sent', err, bytes)
                     if (err) {
-                      that.emit(&#x27;error&#x27;, err)
+                      that.emit('error', err)
                     }
                   })
 
@@ -6554,10 +6547,10 @@ req.on(&#x27;response&#x27;, function(res) {
     this._sendAttemp = 0
   }
 
-  if (!avoidBackoff &#x26;&#x26; ++this._sendAttemp &#x3c;= parameters.maxRetransmit)
+  if (!avoidBackoff &amp;&amp; ++this._sendAttemp &lt;= parameters.maxRetransmit)
     this._bOffTimer = setTimeout(this._bOff, this._currentTime)
 
-  this.emit(&#x27;sending&#x27;, this._message)
+  this.emit('sending', this._message)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
   done()
@@ -6591,7 +6584,7 @@ ObserveWriteStream.prototype._doSend = function doSend(data) {
   clearTimeout(this._bOffTimer)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-them by adding a `req.setOption(&#x27;Block2&#x27;, new Buffer([0x2]))` to the
+them by adding a `req.setOption('Block2', new Buffer([0x2]))` to the
 output of [request](#request).
 
 See the
@@ -6603,7 +6596,7 @@ Returns a Reset COAP Message to the sender. The RST message will appear as an em
 reset flag set to `true` to the caller. This action ends the interaction with the caller.
 
 #### message.writeHead(code, headers)
-Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
+Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not match the CoAP code mask of `#.##`, it is coerced
  into this mask.  `headers` is an object with keys being the header names, and values being the header values.
 
 -------------------------------------------------------
@@ -6628,11 +6621,11 @@ Functions somewhat like `http`&#x27;s `writeHead()` function.  If `code` is does
 
   timeout = avoidBackoff ? parameters.maxRTT : parameters.exchangeLifetime
   this._timer = setTimeout(function() {
-    var err  = new Error(&#x27;No reply in &#x27; + timeout + &#x27;s&#x27;)
+    var err  = new Error('No reply in ' + timeout + 's')
     err.retransmitTimeout = timeout;
     if (!avoidBackoff)
-      that.emit(&#x27;error&#x27;, err)
-    that.emit(&#x27;timeout&#x27;, err)
+      that.emit('error', err)
+    that.emit('timeout', err)
   }, timeout * 1000)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
@@ -6645,9 +6638,9 @@ var that = this
 
 this._sock.<span class="apidocCodeKeywordSpan">send</span>(this._message, 0, this._message.length,
                 this._port, this._host, function(err, bytes) {
-                  that.emit(&#x27;sent&#x27;, err, bytes)
+                  that.emit('sent', err, bytes)
                   if (err) {
-                    that.emit(&#x27;error&#x27;, err)
+                    that.emit('error', err)
                   }
                 })
 ...</pre></li>
@@ -6702,7 +6695,7 @@ this._sock.<span class="apidocCodeKeywordSpan">send</span>(this._message, 0, thi
   // is a fairly low-intensity task, but the period can be altered here
   // or the timer disabled by setting the value to zero.
   // By default the value is set to 0.5 x exchangeLifetime (~120s)
-  if (values &#x26;&#x26; (typeof(values.pruneTimerPeriod)===&#x22;number&#x22;)) {
+  if (values &amp;&amp; (typeof(values.pruneTimerPeriod)==="number")) {
     p.pruneTimerPeriod = values.pruneTimerPeriod
   } else {
     p.pruneTimerPeriod =  (0.5 * p.exchangeLifetime)
@@ -6720,7 +6713,7 @@ coap.<span class="apidocCodeKeywordSpan">updateTiming</span>(coapTiming);
 ```
 
 -------------------------------------------------------
-&#x3c;a name=&#x22;defaultTiming&#x22;&#x3e;&#x3c;/a&#x3e;
+&lt;a name="defaultTiming"&gt;&lt;/a&gt;
 ### coap.defaultTiming
 
 Reset the CoAP timings to the default values
@@ -6736,3 +6729,4 @@ Reset the CoAP timings to the default values
     ]
 </div>
 </div>
+</body></html>
