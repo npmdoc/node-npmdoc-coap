@@ -1189,7 +1189,23 @@ server.listen(function() {
     <li>description and source-code<pre class="apidocCodePre">defaultTiming = function () {
   p.refreshTiming(defaultTiming)
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+var coap = require('../')
+var parameters = coap.parameters
+
+describe('Parameters', function() {
+
+  afterEach(function() {
+parameters.<span class="apidocCodeKeywordSpan">defaultTiming</span>()
+  })
+
+  it('should ignore empty parameter', function() {
+//WHEN
+coap.updateTiming();
+
+// THEN
+...</pre></li>
     </ul>
 
 
@@ -1460,21 +1476,21 @@ Register a new option to be converted to string and added to the
   return agent.request(url)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+  else if (url.agent === false &amp;&amp; ipv6)
+    agent = new Agent({ type: 'udp6' })
+  else if (ipv6)
+    agent = exports.globalAgentIPv6
+  else
+    agent = exports.globalAgent
 
-server.on('request', function(req, res) {
-res.end('Hello ' + req.url.split('/')[1] + '\n')
-})
+  return agent.<span class="apidocCodeKeywordSpan">request</span>(url)
+}
 
-// the default CoAP port is 5683
-server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
+module.exports.createServer = Server
 
-req.on('response', function(res) {
-  res.pipe(process.stdout)
-  res.on('end', function() {
-    process.exit(0)
-  })
-})
+module.exports.Agent = Agent
+module.exports.globalAgent = globalAgent
+module.exports.globalAgentIPv6 = globalAgentV6
 ...</pre></li>
     </ul>
 
@@ -1699,7 +1715,23 @@ the messages.
 
   this._doClose()
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  delete that._tkToReq[packet.token.readUInt32BE(0)]
+}
+
+if (req.url.observe &amp;&amp; packet.code !== '4.04') {
+  response = new ObserveStream(packet, rsinfo, outSocket)
+  response.on('close', function() {
+    delete that._tkToReq[packet.token.readUInt32BE(0)]
+    that.<span class="apidocCodeKeywordSpan">_cleanUp</span>()
+  })
+} else {
+  response = new IncomingMessage(packet, rsinfo, outSocket)
+}
+
+if (!req.multicast) {
+  req.response = response
+...</pre></li>
     </ul>
 
 
@@ -1721,7 +1753,23 @@ the messages.
   this._sock.close()
   this._sock = null
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  return
+
+this._closing = true
+
+if (this._msgInFlight !== 0)
+  return
+
+this.<span class="apidocCodeKeywordSpan">_doClose</span>()
+}
+
+Agent.prototype._doClose = function() {
+for (var k in this._msgIdToReq)
+  this._msgIdToReq[k].sender.reset()
+
+if (this._opts.socket)
+...</pre></li>
     </ul>
 
 
@@ -1879,21 +1927,21 @@ the messages.
   req.emit('response', response)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-}
 
-function handleServerRequest(request, next) {
-  if (request.proxy) {
-    return next();
+  if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+    // ignore this packet since it's not a response.
+    return
   }
-  try {
-    request.server.<span class="apidocCodeKeywordSpan">_handle</span>(request.packet, request.rsinfo)
-    next(null)
-  } catch (err) {
-    next(err)
-  }
-}
 
-function proxyRequest(request, next) {
+  outSocket = that._sock.address();
+  that.<span class="apidocCodeKeywordSpan">_handle</span>(msg, rsinfo, outSocket)
+})
+
+if(this._opts.port){
+  this._sock.bind( this._opts.port );
+};
+
+this._sock.on('error', function(err) {
 ...</pre></li>
     </ul>
 
@@ -1956,7 +2004,23 @@ function proxyRequest(request, next) {
   this._msgInFlight = 0
   this._requests = 0
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+if (opts.socket) {
+  delete opts.port
+}
+
+this._opts = opts
+
+this.<span class="apidocCodeKeywordSpan">_init</span>(opts.socket)
+}
+
+util.inherits(Agent, events.EventEmitter)
+
+Agent.prototype._init = function initSock(socket) {
+if (this._sock) {
+  return
+...</pre></li>
     </ul>
 
 
@@ -1974,7 +2038,23 @@ function proxyRequest(request, next) {
 
   return this._lastMessageId
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  if (block2) {
+    // accumulate payload
+    req._totalPayload = Buffer.concat([req._totalPayload, packet.payload])
+
+    if (block2.moreBlock2) {
+// increase message id for next request
+delete this._msgIdToReq[req._packet.messageId]
+req._packet.messageId = that.<span class="apidocCodeKeywordSpan">_nextMessageId</span>()
+this._msgIdToReq[req._packet.messageId] = req
+
+// next block2 request
+var block2Val = createBlock2({
+  moreBlock2: false,
+  num: block2.num+1,
+  size: block2.size
+...</pre></li>
     </ul>
 
 
@@ -1996,7 +2076,23 @@ function proxyRequest(request, next) {
 
   return buf;
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+if (url.multicast === true) {
+  req.multicast = true
+  packet.confirmable = false
+}
+
+if (!(packet.ack || packet.reset)) {
+  packet.messageId = that._nextMessageId()
+  packet.token = that.<span class="apidocCodeKeywordSpan">_nextToken</span>()
+}
+
+try {
+  buf = generate(packet)
+} catch(err) {
+  req.sender.reset()
+  return req.emit('error', err)
+...</pre></li>
     </ul>
 
 
@@ -2015,7 +2111,23 @@ function proxyRequest(request, next) {
   delete this._msgIdToReq[req._packet.messageId]
   delete this._tkToReq[req._packet.token.readUInt32BE(0)]
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+  req.sender.on('sending', function() {
+that._msgInFlight++
+  })
+
+  req.sender.on('timeout', function (err) {
+req.emit('timeout', err)
+that.<span class="apidocCodeKeywordSpan">abort</span>(req)
+  })
+
+  req.sender.on('sent', function() {
+if (req.multicast) return;
+
+that._msgInFlight--
+if (that._closing &amp;&amp; that._msgInFlight === 0) {
+...</pre></li>
     </ul>
 
 
@@ -2131,21 +2243,21 @@ function proxyRequest(request, next) {
   return req
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+  else if (url.agent === false &amp;&amp; ipv6)
+    agent = new Agent({ type: 'udp6' })
+  else if (ipv6)
+    agent = exports.globalAgentIPv6
+  else
+    agent = exports.globalAgent
 
-server.on('request', function(req, res) {
-res.end('Hello ' + req.url.split('/')[1] + '\n')
-})
+  return agent.<span class="apidocCodeKeywordSpan">request</span>(url)
+}
 
-// the default CoAP port is 5683
-server.listen(function() {
-var req = coap.<span class="apidocCodeKeywordSpan">request</span>('coap://localhost/Matteo')
+module.exports.createServer = Server
 
-req.on('response', function(res) {
-  res.pipe(process.stdout)
-  res.on('end', function() {
-    process.exit(0)
-  })
-})
+module.exports.Agent = Agent
+module.exports.globalAgent = globalAgent
+module.exports.globalAgentIPv6 = globalAgentV6
 ...</pre></li>
     </ul>
 
@@ -2390,21 +2502,21 @@ server.listen(function() {
       if (this._block2Cache.hasOwnProperty(response._cachekey)) {
         debug('found cached payload, key:' ...</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-}
 
-function handleServerRequest(request, next) {
-  if (request.proxy) {
-    return next();
+  if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+    // ignore this packet since it's not a response.
+    return
   }
-  try {
-    request.server.<span class="apidocCodeKeywordSpan">_handle</span>(request.packet, request.rsinfo)
-    next(null)
-  } catch (err) {
-    next(err)
-  }
-}
 
-function proxyRequest(request, next) {
+  outSocket = that._sock.address();
+  that.<span class="apidocCodeKeywordSpan">_handle</span>(msg, rsinfo, outSocket)
+})
+
+if(this._opts.port){
+  this._sock.bind( this._opts.port );
+};
+
+this._sock.on('error', function(err) {
 ...</pre></li>
     </ul>
 
@@ -2427,7 +2539,23 @@ function proxyRequest(request, next) {
 
   this._sock.send(message, 0, message.length, rsinfo.port)
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+, middlewares     = require('./middlewares')
+, debug           = require('debug')('CoAP Server')
+
+
+function handleEnding(err) {
+var request = this
+if (err) {
+  request.server.<span class="apidocCodeKeywordSpan">_sendError</span>(new Buffer(err.message), request.rsinfo, request.packet)
+}
+}
+
+function CoAPServer(options, listener) {
+if (!(this instanceof CoAPServer)) {
+  return new CoAPServer(options, listener)
+}
+...</pre></li>
     </ul>
 
 
@@ -3251,21 +3379,21 @@ that._packet.ack = false
   }
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
-function ObserveReadStream(packet, rsinfo, outSocket) {
-Readable.call(this, { objectMode: true })
-
-this.rsinfo = rsinfo
-this.outSocket = outSocket
-
-this._lastId = 0
-this.<span class="apidocCodeKeywordSpan">append</span>(packet)
+  }
 }
 
-util.inherits(ObserveReadStream, Readable)
+if (req.response) {
+  if (req.response.append) {
+    // it is an observe request
+    // and we are already streaming
+    return req.response.<span class="apidocCodeKeywordSpan">append</span>(packet)
+  } else {
+    // TODO There is a previous response but is not an ObserveStream !
+    return
+  }
 
-ObserveReadStream.prototype.append = function(packet) {
-if (!this.readable)
-  return
+}
+else if (block2) {
 ...</pre></li>
     </ul>
 
@@ -3525,7 +3653,23 @@ Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not 
 
   return this
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+it('should alias setOption to setHeader', function (done) {
+  var req = request({
+      port: port
+    })
+    , buf = new Buffer(3)
+
+  req.<span class="apidocCodeKeywordSpan">setHeader</span>('ETag', buf)
+  req.end()
+
+  server.on('message', function (msg) {
+    expect(parse(msg).options[0].value).to.eql(buf)
+    done()
+  })
+})
+...</pre></li>
     </ul>
 
 
@@ -3982,7 +4126,23 @@ Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not 
 
   return this
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+it('should alias setOption to setHeader', function (done) {
+  var req = request({
+      port: port
+    })
+    , buf = new Buffer(3)
+
+  req.<span class="apidocCodeKeywordSpan">setHeader</span>('ETag', buf)
+  req.end()
+
+  server.on('message', function (msg) {
+    expect(parse(msg).options[0].value).to.eql(buf)
+    done()
+  })
+})
+...</pre></li>
     </ul>
 
 
@@ -4096,7 +4256,23 @@ An `IncomingMessage` object is created by `coap.createServer` or
     <li>description and source-code<pre class="apidocCodePre">defaultTiming = function () {
   p.refreshTiming(defaultTiming)
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+var coap = require('../')
+var parameters = coap.parameters
+
+describe('Parameters', function() {
+
+  afterEach(function() {
+parameters.<span class="apidocCodeKeywordSpan">defaultTiming</span>()
+  })
+
+  it('should ignore empty parameter', function() {
+//WHEN
+coap.updateTiming();
+
+// THEN
+...</pre></li>
     </ul>
 
 
@@ -4149,7 +4325,23 @@ An `IncomingMessage` object is created by `coap.createServer` or
     p.pruneTimerPeriod =  (0.5 * p.exchangeLifetime)
   }
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+  // By default the value is set to 0.5 x exchangeLifetime (~120s)
+  if (values &amp;&amp; (typeof(values.pruneTimerPeriod)==="number")) {
+    p.pruneTimerPeriod = values.pruneTimerPeriod
+  } else {
+    p.pruneTimerPeriod =  (0.5 * p.exchangeLifetime)
+  }
+}
+p.<span class="apidocCodeKeywordSpan">refreshTiming</span>()
+
+
+p.defaultTiming = function() {
+  p.refreshTiming(defaultTiming)
+}
+
+module.exports = p
+...</pre></li>
     </ul>
 
 
@@ -4203,7 +4395,24 @@ An `IncomingMessage` object is created by `coap.createServer` or
     return 0
   }
 }</pre></li>
-    <li>example usage<pre class="apidocCodePre">n/a</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+    , messageId: packet.messageId
+  })
+
+  this._msgInFlight++
+  this._sock.send(buf, 0, buf.length, rsinfo.port, rsinfo.address, ackSent)
+}
+
+if (packet.code != '0.00' &amp;&amp; (req._packet.token.length != packet.token.length || pf.<span class="apidocCodeKeywordSpan
+">compareBuffers</span>(req._packet.token, packet.token) != 0)) {
+  // The tokens don't match, ignore the message since it is a malformed response
+  return
+}
+
+if (!packet.confirmable &amp;&amp; !req.multicast) {
+  delete this._msgIdToReq[packet.messageId]
+}
+...</pre></li>
     </ul>
 
 
@@ -4372,20 +4581,21 @@ Functions somewhat like `http`'s `writeHead()` function.  If `code` is does not 
   }, timeout * 1000)
 }</pre></li>
     <li>example usage<pre class="apidocCodePre">...
+  , message
+  , outSocket
+
+try {
+  packet = parse(msg)
+} catch(err) {
+  message = generate({ code: '5.00', payload: new Buffer('Unable to parse packet') })
+  that._sock.<span class="apidocCodeKeywordSpan">send</span>(message, 0, message.length,
+                  rsinfo.port, rsinfo.address)
+  return
 }
 
-util.inherits(RetrySend, EventEmitter)
-
-RetrySend.prototype._send = function(avoidBackoff) {
-var that = this
-
-this._sock.<span class="apidocCodeKeywordSpan">send</span>(this._message, 0, this._message.length,
-                this._port, this._host, function(err, bytes) {
-                  that.emit('sent', err, bytes)
-                  if (err) {
-                    that.emit('error', err)
-                  }
-                })
+if (packet.code[0] === '0' &amp;&amp; packet.code !== '0.00') {
+  // ignore this packet since it's not a response.
+  return
 ...</pre></li>
     </ul>
 
