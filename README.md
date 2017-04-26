@@ -1,6 +1,6 @@
 # npmdoc-coap
 
-#### api documentation for  [coap (v0.21.0)](https://github.com/mcollina/node-coap#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-coap.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-coap) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-coap.svg)](https://travis-ci.org/npmdoc/node-npmdoc-coap)
+#### basic api documentation for  [coap (v0.21.0)](https://github.com/mcollina/node-coap#readme)  [![npm package](https://img.shields.io/npm/v/npmdoc-coap.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-coap) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-coap.svg)](https://travis-ci.org/npmdoc/node-npmdoc-coap)
 
 #### A CoAP library for node modelled after 'http'
 
@@ -88,7 +88,8 @@
         "test": "mocha --bail --reporter spec 2>&1",
         "testnobail": "mocha --reporter spec 2>&1"
     },
-    "version": "0.21.0"
+    "version": "0.21.0",
+    "bin": {}
 }
 ```
 
